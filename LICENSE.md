@@ -1,12 +1,23 @@
-# License
+# License — Educational, Non-Commercial Use Only
 
-Copyright © Prof. Anis Koubaa — RAISE 2026 Summer School.
+Copyright © Prof. Anis Koubaa — RAISE 2026 Summer School. All rights reserved.
 
-This work (slides, textbook, lab guides, and course code in this repository) is
-licensed under the **Creative Commons Attribution-NonCommercial 4.0 International
-License (CC BY-NC 4.0)**.
+These materials (course code, slides, lab guides, and reference dataset in this
+repository) are provided **solely for educational and non-commercial use** by
+participants of the RAISE 2026 Summer School.
 
-You are free to **share** and **adapt** the material, provided you give
-appropriate **attribution** and do **not** use it for commercial purposes.
+## You may
+- Use, run, and study the materials for **learning and teaching**.
+- Share and adapt them for **non-commercial, educational** purposes, **with
+  attribution** to Prof. Anis Koubaa / RAISE 2026.
 
-Full text: https://creativecommons.org/licenses/by-nc/4.0/
+## You may not
+- Use the materials, in whole or in part, for any **commercial** purpose.
+- Redistribute them without attribution or under more permissive terms.
+
+Formally, this work is licensed under the **Creative Commons
+Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0)**:
+https://creativecommons.org/licenses/by-nc/4.0/
+
+For any use beyond the above (including commercial licensing), contact
+anis.koubaa@gmail.com.

@@ -49,5 +49,4 @@ and Lab 2.2 will pick it up automatically.
 
 ## License
 
-Course materials © Prof. Anis Koubaa, RAISE 2026. Released under
-**Creative Commons Attribution-NonCommercial 4.0 (CC BY-NC 4.0)** — see `LICENSE.md`.
+**Educational, non-commercial use only** (CC BY-NC 4.0). © Prof. Anis Koubaa, RAISE 2026 — see `LICENSE.md`.
