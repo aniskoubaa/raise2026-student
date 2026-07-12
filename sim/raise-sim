@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# Author: Prof. Anis Koubaa <anis.koubaa@gmail.com>
+# RAISE 2026 — launch the simulation with all known environment fixes.
+#
+# This wrapper handles three classes of environment hazards that students may hit:
+#
+#   1. VS Code snap terminals inject GTK / locale paths that load the wrong
+#      libpthread on Ubuntu 24.04. Stripped here so `gz sim gui` doesn't die
+#      with `symbol lookup error`.
+#
+#   2. Anaconda's python shadows system python and breaks ROS introspection
+#      (no catkin_pkg in the conda env). Stripped here.
+#
+#   3. Hybrid Intel iGPU + NVIDIA dGPU laptops route OpenGL to Intel by
+#      default, and Gazebo Harmonic's Ogre2 hangs at GL context creation.
+#      Conditionally applied PRIME offload via `__NV_PRIME_RENDER_OFFLOAD`
+#      when an NVIDIA card is detected.
+#
+#   4. Ubuntu 24.04 defaults to a Wayland session, and Gazebo Harmonic's Qt
+#      GUI often hangs on a blank window or fails to open under the Wayland
+#      backend. Forcing the X11/xcb backend (via XWayland) fixes it. Applied
+#      only when a Wayland session is detected — X11 users are unaffected.
+#      (Reported by RAISE 2026 students; thank you.)
+#
+# Also sets a sensible `XAUTHORITY` so X11 auth works from any shell.
+#
+# Usage:
+#   raise-sim                                          # default world
+#   raise-sim world:=greenhouse_2026_lite.sdf          # any sim.launch.py arg
+#   raise-sim y:=-1.0                                  # spawn robot in row 0 alley
+
+set -euo pipefail
+
+# Follow symlinks (when installed as /usr/local/bin/raise-sim) back to the real
+# script location so we can find the workspace as a sibling of sim/.
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "${SCRIPT_PATH}")"
+WS_DIR="$(cd "${SCRIPT_DIR}/../raise_ros2_ws" && pwd)"
+
+# ── env vars to unset (snap + anaconda injections) ──────────────────────────
+SNAP_VARS=(
+  GTK_PATH GTK_EXE_PREFIX GTK_IM_MODULE_FILE
+  GIO_MODULE_DIR LOCPATH
+  GSETTINGS_SCHEMA_DIR GSETTINGS_SCHEMA_DIR_CONDA_BACKUP
+  XDG_DATA_HOME XDG_CONFIG_HOME XDG_CACHE_HOME
+  VSCODE_GIT_ASKPASS_NODE VSCODE_GIT_ASKPASS_MAIN VSCODE_GIT_IPC_HANDLE
+  GIT_ASKPASS VSCODE_INJECTION VSCODE_IPC_HOOK_CLI ELECTRON_RUN_AS_NODE
+)
+CONDA_VARS=(CONDA_PREFIX CONDA_DEFAULT_ENV CONDA_PROMPT_MODIFIER CONDA_SHLVL CONDA_EXE)
+
+unset_args=()
+for v in "${SNAP_VARS[@]}" "${CONDA_VARS[@]}"; do unset_args+=(-u "$v"); done
+
+# ── conditional NVIDIA PRIME offload ────────────────────────────────────────
+PRIME_VARS=()
+if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L 2>/dev/null | grep -q GPU; then
+  PRIME_VARS=(
+    __NV_PRIME_RENDER_OFFLOAD=1
+    __GLX_VENDOR_LIBRARY_NAME=nvidia
+    __VK_LAYER_NV_optimus=NVIDIA_only
+  )
+fi
+
+# ── conditional Wayland → xcb (X11/XWayland) for the Qt GUI ──────────────────
+# On a Wayland session the Gazebo Qt GUI frequently hangs on a blank window;
+# forcing the xcb platform plugin routes it through XWayland and fixes it. Only
+# override when the session is actually Wayland so pure-X11 setups are untouched.
+QT_VARS=()
+if [[ "${XDG_SESSION_TYPE:-}" == "wayland" || -n "${WAYLAND_DISPLAY:-}" ]]; then
+  QT_VARS=(QT_QPA_PLATFORM=xcb)
+fi
+
+# ── strip /snap and anaconda from path vars ─────────────────────────────────
+strip_paths() { echo "${1:-}" | tr ':' '\n' | grep -vE '/snap/|anaconda' | paste -sd:; }
+strip_snap()  { echo "${1:-}" | tr ':' '\n' | grep -v '/snap/'           | paste -sd:; }
+
+# ── workspace sanity check ──────────────────────────────────────────────────
+if [[ ! -f "${WS_DIR}/install/setup.bash" ]]; then
+  cat >&2 <<EOF
+✗ Workspace not built at ${WS_DIR}.
+  Run the installer first: ${SCRIPT_DIR}/install.sh
+EOF
+  exit 1
+fi
+
+# ── launch ──────────────────────────────────────────────────────────────────
+exec env "${unset_args[@]}" \
+    PATH="$(strip_paths "${PATH:-/usr/bin:/bin}")" \
+    LD_LIBRARY_PATH="$(strip_snap "${LD_LIBRARY_PATH:-}")" \
+    XDG_DATA_DIRS="$(strip_snap "${XDG_DATA_DIRS:-/usr/local/share:/usr/share}")" \
+    DISPLAY="${DISPLAY:-:0}" \
+    XAUTHORITY="${XAUTHORITY:-/run/user/$(id -u)/gdm/Xauthority}" \
+    HOME="${HOME}" USER="${USER}" \
+    "${PRIME_VARS[@]}" \
+    "${QT_VARS[@]}" \
+    WS_DIR="${WS_DIR}" \
+  bash -c '
+    source /opt/ros/jazzy/setup.bash
+    # shellcheck disable=SC1091
+    source "${WS_DIR}/install/setup.bash"
+    exec ros2 launch raise2026_bringup sim.launch.py "$@"
+  ' bash "$@"

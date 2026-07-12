@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAISE 2026 — Prepare Your Machine</title>
+<meta name="description" content="RAISE 2026 Summer School — pre-school setup guide. Prepare your laptop for the agentic robotics labs before Day 1.">
+<style>
+  :root{
+    --green:#2e7d32; --green-dark:#1b5e20; --green-light:#e8f5e9;
+    --amber:#f59e0b; --amber-light:#fef3c7;
+    --red:#dc2626;   --red-light:#fee2e2;
+    --blue:#2563eb;  --blue-light:#dbeafe;
+    --ink:#1f2937; --muted:#6b7280; --border:#e5e7eb; --bg:#f9fafb;
+    --code-bg:#111827; --code-ink:#e5e7eb;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+  .hero{background:linear-gradient(135deg,var(--green-dark),var(--green));color:#fff;padding:48px 24px 40px;text-align:center}
+  .hero .eyebrow{text-transform:uppercase;letter-spacing:.15em;font-size:.8rem;opacity:.85;margin-bottom:8px}
+  .hero h1{margin:0 0 10px;font-size:2rem;line-height:1.25}
+  .hero .sub{opacity:.9;max-width:640px;margin:0 auto;font-size:1.05rem}
+  .hero .meta{margin-top:18px;display:flex;gap:22px;justify-content:center;flex-wrap:wrap;font-size:.95rem}
+  .container{max-width:860px;margin:0 auto;padding:24px 20px 80px}
+  section{background:#fff;border:1px solid var(--border);border-radius:12px;padding:28px 30px;margin-top:28px}
+  h2{margin:0 0 14px;font-size:1.45rem;color:var(--green-dark);display:flex;align-items:center;gap:12px}
+  h2 .num{background:var(--green);color:#fff;border-radius:50%;width:34px;height:34px;min-width:34px;display:inline-flex;align-items:center;justify-content:center;font-size:1rem}
+  h3{margin:22px 0 8px;font-size:1.1rem}
+  p{margin:8px 0}
+  .lead{font-size:1.05rem}
+  code{background:#eef2f7;padding:1px 6px;border-radius:4px;font-size:.9em}
+  pre{background:var(--code-bg);color:var(--code-ink);padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:.9rem;position:relative;margin:10px 0}
+  pre code{background:none;padding:0;color:inherit}
+  pre .copy{position:absolute;top:8px;right:8px;background:#374151;color:#d1d5db;border:none;border-radius:5px;padding:3px 10px;font-size:.75rem;cursor:pointer}
+  pre .copy:hover{background:#4b5563}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.95rem}
+  th,td{border:1px solid var(--border);padding:9px 12px;text-align:left;vertical-align:top}
+  th{background:var(--green-light);color:var(--green-dark)}
+  .badge{display:inline-block;border-radius:999px;padding:2px 11px;font-size:.75rem;font-weight:700;letter-spacing:.03em;vertical-align:middle}
+  .badge.tested{background:var(--green-light);color:var(--green-dark)}
+  .badge.effort{background:var(--amber-light);color:#92400e}
+  .badge.fallback{background:var(--blue-light);color:#1e40af}
+  .badge.nosup{background:var(--red-light);color:#991b1b}
+  .callout{border-left:4px solid;border-radius:0 8px 8px 0;padding:12px 16px;margin:14px 0;font-size:.95rem}
+  .callout.info{border-color:var(--blue);background:var(--blue-light)}
+  .callout.warn{border-color:var(--amber);background:var(--amber-light)}
+  .callout.good{border-color:var(--green);background:var(--green-light)}
+  .callout.stop{border-color:var(--red);background:var(--red-light)}
+  .paths{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:14px 0}
+  .path{border:1px solid var(--border);border-radius:10px;padding:16px 18px;background:var(--bg)}
+  .path h4{margin:0 0 6px;font-size:1rem}
+  .path p{font-size:.9rem;margin:6px 0 0;color:var(--muted)}
+  .steps{counter-reset:step;list-style:none;padding:0;margin:14px 0}
+  .steps>li{counter-increment:step;position:relative;padding:0 0 20px 52px}
+  .steps>li::before{content:counter(step);position:absolute;left:0;top:0;width:34px;height:34px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+  .steps>li:not(:last-child)::after{content:"";position:absolute;left:16px;top:38px;bottom:0;width:2px;background:var(--border)}
+  .steps h4{margin:4px 0 6px;font-size:1.05rem}
+  details{border:1px solid var(--border);border-radius:8px;margin:10px 0;background:var(--bg)}
+  details summary{cursor:pointer;padding:12px 16px;font-weight:600}
+  details[open] summary{border-bottom:1px solid var(--border)}
+  details .body{padding:12px 16px}
+  ul.check{list-style:none;padding:0}
+  ul.check li{padding:7px 0 7px 32px;position:relative;border-bottom:1px dashed var(--border)}
+  ul.check li::before{content:"☐";position:absolute;left:4px;font-size:1.15rem;color:var(--green)}
+  .footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:40px}
+  .toc{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;justify-content:center}
+  .toc a{background:rgba(255,255,255,.15);color:#fff;text-decoration:none;padding:6px 14px;border-radius:999px;font-size:.85rem}
+  .toc a:hover{background:rgba(255,255,255,.28)}
+  kbd{background:#eef2f7;border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;padding:1px 6px;font-size:.85em}
+  @media print{.hero .toc{display:none} pre .copy{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="eyebrow">RAISE 2026 Summer School · Pre-School Setup</div>
+  <h1>Prepare Your Machine 🌱🤖</h1>
+  <p class="sub">Agentic Robotics &amp; VLA Models for Autonomous Agriculture.<br>
+  Complete this guide <strong>before Day 1</strong> so you spend the school driving robots — not installing software.</p>
+  <div class="meta">
+    <span>📅 <strong>14–16 July 2026</strong></span>
+    <span>📍 <strong>ENET'Com–Sfax, Tunisia</strong></span>
+    <span>⏱️ Setup time: <strong>60–90 min</strong></span>
+    <span>💻 <strong>Ubuntu 24.04 REQUIRED</strong></span>
+  </div>
+  <nav class="toc">
+    <a href="#requirements">1 · Requirements</a>
+    <a href="#install">2 · Install</a>
+    <a href="#verify">3 · Verify</a>
+    <a href="#trouble">4 · Troubleshooting</a>
+    <a href="#checklist">5 · Checklist</a>
+  </nav>
+</header>
+
+<div class="container">
+
+<!-- 0. WHAT THIS IS -->
+<section>
+  <h2><span class="num">ℹ</span>What you are installing</h2>
+  <p class="lead">During the school you will run a <strong>simulated farm robot</strong> (mobile base + robot arm + cameras) in a Gazebo greenhouse world, and control it with ROS 2 and AI agents.</p>
+  <p>This kit is <strong>self-contained</strong> — <em>no GitHub account needed</em>. One script installs everything the school needs:</p>
+  <table>
+    <tr><th>Component</th><th>What it does</th></tr>
+    <tr><td><strong>ROS 2 Jazzy</strong></td><td>The robot operating system — how your code talks to the robot</td></tr>
+    <tr><td><strong>Gazebo Harmonic</strong></td><td>The 3D simulator with the greenhouse world</td></tr>
+    <tr><td><strong>Python ML libraries</strong></td><td>YOLO object detection + AI API clients for the perception labs</td></tr>
+    <tr><td><strong>LeRobot AI toolkit</strong></td><td>The Day-2 environment for training your robot's brain (~3 GB, from PyPI)</td></tr>
+  </table>
+  <div class="callout info">
+    <strong>The course code and the pre-trained model are handed to you on Day 1</strong> (USB / shared folder) — you do <em>not</em> need to download them or have any GitHub access. Because this kit already installed every dependency, the Day-1 build takes about <strong>2 minutes</strong>.
+  </div>
+</section>
+
+<!-- 1. REQUIREMENTS -->
+<section id="requirements">
+  <h2><span class="num">1</span>Requirements</h2>
+  <div class="callout stop">
+    <strong>⚠ Ubuntu 24.04 is REQUIRED — it is the only supported platform.</strong> The scripts will <strong>refuse to install</strong> on any other Ubuntu version, on other Linux distros, on Windows/WSL, on macOS, or in Docker. If you are not on Ubuntu 24.04, install it first (dual-boot alongside Windows is fine — see below).
+  </div>
+  <table>
+    <tr><th></th><th>Minimum</th><th>Recommended</th></tr>
+    <tr><td><strong>OS</strong></td><td colspan="2"><strong>Ubuntu 24.04 LTS (Desktop), native.</strong> ROS 2 Jazzy only. Nothing else is supported.</td></tr>
+    <tr><td><strong>CPU</strong></td><td>4 cores</td><td>6+ cores</td></tr>
+    <tr><td><strong>RAM</strong></td><td>8 GB</td><td>16 GB</td></tr>
+    <tr><td><strong>Free disk</strong></td><td>25 GB</td><td>35 GB</td></tr>
+    <tr><td><strong>GPU</strong></td><td colspan="2">❌ <strong>Not required.</strong> Heavy AI runs on cloud APIs and a shared GPU server.</td></tr>
+    <tr><td><strong>Internet</strong></td><td colspan="2">Needed once for setup (several GB of downloads) — use good Wi-Fi at home</td></tr>
+  </table>
+  <div class="callout warn">
+    <strong>Have ROS 2 Humble installed?</strong> It must be removed — RAISE 2026 uses <strong>ROS 2 Jazzy only</strong>, and having both makes your shell load the wrong one. <code>prepare_machine.sh</code> detects Humble and offers to remove it, or remove it yourself: <code>sudo apt purge -y 'ros-humble-*' &amp;&amp; sudo apt autoremove -y</code>
+  </div>
+  <details>
+    <summary>🪟 I'm on Windows / macOS / another Linux — how do I get Ubuntu 24.04?</summary>
+    <div class="body">
+      <p><strong>Windows (recommended: dual-boot).</strong></p>
+      <ol>
+        <li>Back up your files.</li>
+        <li>In Windows, free ~60 GB: <em>Disk Management → shrink the C: partition</em>.</li>
+        <li>Download <a href="https://ubuntu.com/download/desktop">Ubuntu 24.04 Desktop</a> and flash it to a USB stick with <a href="https://rufus.ie">Rufus</a> or <a href="https://etcher.balena.io">balenaEtcher</a>.</li>
+        <li>Boot from the USB (usually <kbd>F12</kbd>/<kbd>F2</kbd>/<kbd>Esc</kbd> at power-on) → <em>Install Ubuntu alongside Windows</em>.</li>
+        <li>Boot into Ubuntu 24.04 and continue with <a href="#install">Section 2</a>.</li>
+      </ol>
+      <p><strong>macOS or another Linux.</strong> The simulator needs native Ubuntu 24.04. Best options: use a second machine with Ubuntu 24.04, or a full Ubuntu 24.04 virtual machine (4 CPUs + 8 GB RAM + 40 GB disk; expect reduced 3D performance), or contact the instructors to arrange pairing / a lab machine.</p>
+      <p class="lead" style="margin-top:10px">Note: WSL2 is <strong>not</strong> supported — students hit GPU/graphics failures with the simulator there. Use a native (or dual-boot) install.</p>
+    </div>
+  </details>
+</section>
+
+<!-- 2. INSTALL -->
+<section id="install">
+  <h2><span class="num">2</span>Install <span class="badge tested">Ubuntu 24.04 · one script</span></h2>
+  <p class="lead">On your Ubuntu 24.04 machine, run the one script. It installs ROS 2 Jazzy, Gazebo Harmonic, every lab dependency, and the Day-2 LeRobot AI toolkit.</p>
+  <ol class="steps">
+    <li>
+      <h4>Copy this kit onto your laptop and open a terminal in <code>scripts</code></h4>
+      <p>You need the two files <code>prepare_machine.sh</code> and <code>check_setup.sh</code>.</p>
+    </li>
+    <li>
+      <h4>Run the installer</h4>
+      <pre><code>cd ~/RAISE2026_Student_Setup/scripts   # wherever you copied the kit
+chmod +x prepare_machine.sh check_setup.sh
+./prepare_machine.sh</code></pre>
+      <p>Enter your password when <code>sudo</code> asks. Plan <strong>60–90 minutes</strong> depending on your internet — most of it is the ML libraries and the LeRobot toolkit (several GB). If Humble is present, it will offer to remove it first.</p>
+    </li>
+    <li>
+      <h4>Read the final report</h4>
+      <p>The script ends by running the readiness check automatically. You want:</p>
+      <pre><code>✅ READY FOR RAISE 2026  (Ubuntu 24.04 + ROS 2 Jazzy)</code></pre>
+      <p>If a step failed (usually a dropped download), just <strong>re-run <code>./prepare_machine.sh</code></strong> — it skips everything already done and retries only what's missing.</p>
+    </li>
+  </ol>
+  <div class="callout good">
+    <strong>Safe to re-run.</strong> The script is idempotent: run it as many times as you like, it only does the missing work. It also handles Anaconda automatically (a common source of ROS problems).
+  </div>
+  <div class="callout info">
+    <strong>On Day 1</strong> the instructors give you the course code and the pre-trained model (USB / shared folder). You then run <code>cd RAISE2026/sim &amp;&amp; ./install.sh</code>, which builds the workspace in ~2 minutes because everything heavy is already on your machine.
+  </div>
+</section>
+
+<!-- 3. VERIFY -->
+<section id="verify">
+  <h2><span class="num">3</span>Verify your setup</h2>
+  <p class="lead">Run the readiness check any time — before the school, after fixing something, on Day 1 morning:</p>
+  <pre><code>./check_setup.sh</code></pre>
+  <p>A ready machine prints something like:</p>
+  <pre><code>════════════════════════════════════════════════════════
+  FINAL SUMMARY   ✓ 13 passed   ⚠ 0 warnings   ✗ 0 failed
+  ✅ READY FOR RAISE 2026  (Ubuntu 24.04 + ROS 2 Jazzy)
+  → Send a screenshot of this summary to the instructors.
+════════════════════════════════════════════════════════</code></pre>
+  <div class="callout good">
+    <strong>📸 Final step: send us a screenshot</strong> of the summary block (pass or fail!) via the channel announced with this kit. If it says NOT READY, we'll help you fix it <em>before</em> Day 1.
+  </div>
+  <p>A few <strong>⚠ warnings</strong> are fine (e.g. the LeRobot toolkit still downloading). Any <strong>✗ failed</strong> line needs fixing — usually just re-running <code>./prepare_machine.sh</code>. A <strong>✗</strong> on the OS or Humble line means the platform is wrong: get onto Ubuntu 24.04 and remove Humble.</p>
+</section>
+
+<!-- 4. TROUBLESHOOTING -->
+<section id="trouble">
+  <h2><span class="num">4</span>Troubleshooting</h2>
+
+  <details>
+    <summary>The script says my platform is not supported</summary>
+    <div class="body">
+      <p>RAISE 2026 runs on <strong>Ubuntu 24.04 only</strong>. The script refuses to install on other Ubuntu versions, other Linux, Windows/WSL, macOS, or Docker — this is deliberate, so everyone is on the same tested stack. Install Ubuntu 24.04 (dual-boot is fine — see <a href="#requirements">Requirements</a>) and run it there.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>I have ROS 2 Humble and need to remove it</summary>
+    <div class="body">
+      <p>Humble is not supported. Remove all its packages and any leftover shell config:</p>
+      <pre><code>sudo apt purge -y 'ros-humble-*' &amp;&amp; sudo apt autoremove -y
+# also remove any Humble line from your shell startup:
+sed -i '\|/opt/ros/humble/setup.bash|d' ~/.bashrc</code></pre>
+      <p>Then re-run <code>./prepare_machine.sh</code> (it installs Jazzy) and open a new terminal.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>The script fails while downloading ROS 2 packages</summary>
+    <div class="body">
+      <p>Almost always a network issue. Check your connection and simply <strong>re-run the script</strong> — it resumes where it stopped. If you're behind a campus proxy, configure apt for it first:</p>
+      <pre><code>sudo nano /etc/apt/apt.conf.d/95proxies
+# add:
+#   Acquire::http::Proxy "http://your.proxy:port/";
+#   Acquire::https::Proxy "http://your.proxy:port/";</code></pre>
+      <p>Then re-run <code>./prepare_machine.sh</code>.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>pip fails with an SSL / connection error</summary>
+    <div class="body">
+      <p>Large ML downloads on flaky Wi-Fi sometimes drop mid-stream. The script already retries 3 times; if it still fails, switch to a better connection and re-run. Nothing is lost between runs.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>I use Anaconda / Miniconda — will it break ROS?</summary>
+    <div class="body">
+      <p>It would, but the script protects you: it detects an active conda environment and re-launches itself with conda stripped. You don't need to uninstall anything. Just avoid <code>conda activate</code> in the terminals you use for the labs (or run <code>conda deactivate</code> first).</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>The Gazebo window is black, blank, or never opens</summary>
+    <div class="body">
+      <p>This is the most common simulator problem on Ubuntu 24.04, and the <code>raise-sim</code> launcher now fixes the two usual causes <strong>automatically</strong>:</p>
+      <ul>
+        <li><strong>Wayland session.</strong> Ubuntu 24.04 logs you into Wayland by default, and Gazebo's Qt window often hangs on a blank screen there. The launcher forces the X11/xcb backend (<code>QT_QPA_PLATFORM=xcb</code>) when it detects Wayland.</li>
+        <li><strong>Hybrid Intel + NVIDIA graphics.</strong> The launcher applies NVIDIA PRIME offload when it finds an NVIDIA card, so rendering doesn't get stuck on the Intel chip.</li>
+      </ul>
+      <p><code>check_setup.sh</code> reports both under <em>“Display server &amp; GPU”</em> so you can see what will happen before Day 1.</p>
+      <p>If a launch still misbehaves, reset a possibly-corrupted Gazebo GUI config (it is backed up, not deleted) and try again from a fresh terminal:</p>
+      <pre><code>mkdir -p ~/.raise_backups
+mv ~/.gz/gui ~/.raise_backups/gz_gui_$(date +%s) 2>/dev/null || true
+mv ~/.gz/sim ~/.raise_backups/gz_sim_$(date +%s) 2>/dev/null || true
+raise-sim</code></pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>The sim hangs, or a second launch won't start</summary>
+    <div class="body">
+      <p>A previous run may have left Gazebo/ROS processes running. Stop them cleanly, then relaunch from a <strong>fresh terminal</strong>:</p>
+      <pre><code>raise-stop          # the clean way (installed with the course)
+# or, if that isn't available yet:
+pkill -f "gz sim|gazebo|parameter_bridge|robot_state_publisher|ros_gz_sim"
+raise-sim</code></pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>The LeRobot venv failed (<code>ensurepip is not available</code>)</summary>
+    <div class="body">
+      <p>The <code>python3-venv</code> package was missing. The script now installs it automatically — just <strong>re-run <code>./prepare_machine.sh</code></strong>. To fix it by hand:</p>
+      <pre><code>sudo apt install -y python3-venv
+./prepare_machine.sh      # re-creates the venv and installs LeRobot</code></pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>The check says "cv_bridge/numpy broken"</summary>
+    <div class="body">
+      <p>Some other tool installed numpy 2.x, which conflicts with ROS's camera bridge (it needs numpy 1.x). Fix:</p>
+      <pre><code>/usr/bin/python3 -m pip install --user --break-system-packages --force-reinstall "numpy&lt;2"</code></pre>
+      <p>Then run <code>./check_setup.sh</code> again.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Not enough disk space</summary>
+    <div class="body">
+      <p>The full setup needs ~20 GB installed (plan 25 GB free — ROS + ML libraries + the LeRobot toolkit are large). Quick wins: empty the trash, <code>sudo apt clean</code>, and remove old snaps (<code>snap list --all</code>).</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>Something else is broken</summary>
+    <div class="body">
+      <p>Send the instructors: (1) a screenshot of the <code>check_setup.sh</code> summary, (2) the last ~30 lines of the failing script output, (3) your OS and laptop model. We triage before Day 1 and there is a help desk on-site.</p>
+    </div>
+  </details>
+</section>
+
+<!-- 5. CHECKLIST -->
+<section id="checklist">
+  <h2><span class="num">5</span>Final checklist — bring this to Day 1</h2>
+  <ul class="check">
+    <li>On <strong>Ubuntu 24.04</strong> (and ROS 2 Humble removed if you had it)</li>
+    <li>Ran <code>prepare_machine.sh</code> at home on good internet</li>
+    <li><code>check_setup.sh</code> prints <strong>✅ READY FOR RAISE 2026</strong> (ROS 2 Jazzy stack + LeRobot toolkit all green)</li>
+    <li>Sent the screenshot of the summary to the instructors</li>
+    <li>Laptop charger packed (simulation drains batteries fast)</li>
+    <li>Optional: a smartphone on the same Wi-Fi — you'll drive the robot from it 📱</li>
+  </ul>
+  <div class="callout info">
+    <strong>What happens on Day 1:</strong> the instructors give you the course code and the pre-trained model (USB / shared folder — no GitHub needed). You run one installer command, and within minutes you're driving a robot through a simulated Sfax greenhouse — tomato rows, olive trees, chickens and all. 🍅🫒🐔
+  </div>
+  <p><strong>No API keys needed for setup.</strong> Free AI API keys (Claude / GPT / Gemini) are provided during the school.</p>
+</section>
+
+<div class="footer">
+  RAISE 2026 Summer School · Agentic Robotics &amp; VLA Models for Autonomous Agriculture<br>
+  ENET'Com–Sfax, Tunisia · 14–16 July 2026 · Prof. Anis Koubaa
+</div>
+
+</div>
+
+<script>
+  // Copy buttons on every code block
+  document.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.className = 'copy';
+    btn.textContent = 'copy';
+    btn.addEventListener('click', () => {
+      navigator.clipboard.writeText(pre.querySelector('code').innerText).then(() => {
+        btn.textContent = 'copied ✓';
+        setTimeout(() => btn.textContent = 'copy', 1500);
+      });
+    });
+    pre.appendChild(btn);
+  });
+</script>
+</body>
+</html>

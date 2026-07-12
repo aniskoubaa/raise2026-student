@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<!-- Author: Prof. Anis Koubaa <anis.koubaa@gmail.com> -->
+<!-- RAISE 2026 - Day 1 Hands-On: step-by-step, copy-paste lab guide.
+     Self-contained (inline CSS + JS). Open in any browser; works offline. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAISE 2026 - Day 1 Hands-On</title>
+<style>
+  :root{
+    --green:#134E3F; --green2:#1E6F5C; --amber:#D97706; --amber-d:#B45309;
+    --ink:#1c2b26; --muted:#5c6b66; --line:#e3e9e6; --bg:#f6f8f7; --card:#ffffff;
+    --term-bg:#12241d; --term-ink:#e8f3ee; --ok:#2f855a; --warn:#b45309;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:var(--ink);background:var(--bg);line-height:1.55;}
+  a{color:var(--green2)}
+  header{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;padding:26px 20px 22px;}
+  header .wrap{max-width:860px;margin:0 auto}
+  header h1{margin:0 0 4px;font-size:1.7rem;letter-spacing:.2px}
+  header p{margin:0;opacity:.9;font-size:1.02rem}
+  header .leaf{font-size:1.3rem}
+  main{max-width:860px;margin:0 auto;padding:22px 20px 60px}
+  .lead{background:#fff8ec;border:1px solid #f2dcb3;border-left:5px solid var(--amber);
+        border-radius:10px;padding:14px 16px;margin:18px 0}
+  .lead b{color:var(--amber-d)}
+  h2{color:var(--green);border-bottom:2px solid var(--line);padding-bottom:6px;margin-top:38px;font-size:1.35rem}
+  h3{color:var(--green2);margin:22px 0 6px;font-size:1.08rem}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;
+        box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  .step .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+        background:var(--green);color:#fff;font-weight:700;font-size:.85rem;margin-right:8px;vertical-align:middle}
+  .step h3{display:inline;margin:0}
+  .step p{margin:8px 0}
+  .muted{color:var(--muted);font-size:.94rem}
+  /* command block */
+  .cmd{position:relative;background:var(--term-bg);color:var(--term-ink);border-radius:9px;
+       padding:12px 92px 12px 14px;margin:10px 0;font-family:"SF Mono",Menlo,Consolas,monospace;
+       font-size:.92rem;overflow-x:auto;white-space:pre}
+  .cmd .prompt{color:#7fd1ad;user-select:none}
+  .cmd .note{color:#8fb3a6;font-style:italic}
+  .cmd button{position:absolute;top:8px;right:8px;background:var(--amber);color:#fff;border:0;border-radius:6px;
+       padding:5px 12px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit}
+  .cmd button:hover{background:var(--amber-d)}
+  .cmd button.done{background:var(--ok)}
+  .see{border-left:3px solid var(--green2);background:#f0f6f3;border-radius:0 8px 8px 0;
+       padding:8px 12px;margin:8px 0;font-size:.93rem}
+  .see b{color:var(--green2)}
+  kbd{background:#eef2f0;border:1px solid #cdd8d3;border-bottom-width:2px;border-radius:5px;padding:1px 6px;
+      font-family:monospace;font-size:.85em}
+  code.inl{background:#eef2f0;border-radius:4px;padding:1px 6px;font-family:monospace;font-size:.9em;color:var(--green)}
+  .pill{display:inline-block;background:var(--green);color:#fff;border-radius:20px;padding:2px 12px;font-size:.8rem;
+        font-weight:600;margin-bottom:8px}
+  .pill.amber{background:var(--amber)}
+  table{border-collapse:collapse;width:100%;margin:10px 0;font-size:.92rem}
+  th,td{border:1px solid var(--line);padding:7px 10px;text-align:left}
+  th{background:var(--green);color:#fff}
+  tr:nth-child(even) td{background:#f7faf9}
+  .tip{background:#eef6f1;border:1px solid #cfe4d8;border-radius:8px;padding:10px 14px;margin:12px 0;font-size:.94rem}
+  .warn{background:#fdf1e6;border:1px solid #f0d3ad;border-radius:8px;padding:10px 14px;margin:12px 0;font-size:.94rem}
+  footer{max-width:860px;margin:0 auto;padding:20px;color:var(--muted);font-size:.88rem;border-top:1px solid var(--line)}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:16px 0}
+  .toc a{display:inline-block;margin:3px 10px 3px 0}
+  @media (max-width:560px){ .cmd{padding-right:14px;padding-top:40px} .cmd button{top:6px;right:6px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <span class="leaf">🌿</span>
+    <h1>RAISE 2026 &mdash; Day 1 Hands-On</h1>
+    <p>From ROS 2 tools to an LLM agent that drives the robot &middot; copy, paste, follow.</p>
+  </div>
+</header>
+
+<main>
+  <div class="lead">
+    <b>What you'll do:</b> drive and sense the robot with a few commands (Lab 1.1),
+    call each robot skill as a service, then let an <b>LLM agent</b> chain those
+    skills to inspect a plant on its own (Lab 1.2). Every step is one command &mdash;
+    press <b>Copy</b>, paste into a terminal, run.
+  </div>
+
+  <div class="toc">
+    <b>Jump to:</b>
+    <a href="#setup">Setup</a>
+    <a href="#drive">Lab 1.1 &middot; Drive &amp; Sense</a>
+    <a href="#skills">Lab 1.1 &middot; Call Skills</a>
+    <a href="#agent">Lab 1.1 &middot; LLM Agent</a>
+    <a href="#mission">Lab 1.2 &middot; Give a Mission</a>
+    <a href="#handy">Handy Commands</a>
+    <a href="#trouble">Troubleshooting</a>
+  </div>
+
+  <h2 id="setup">0 &middot; Before you start</h2>
+  <div class="step">
+    <span class="num">1</span><h3>Launch the greenhouse simulator</h3>
+    <p>Open a terminal and start the sim. <b>Leave this terminal running</b> &mdash; open a new terminal for every command after this.</p>
+    <div class="cmd"><span class="prompt">$ </span>raise-sim<button>Copy</button></div>
+    <div class="see"><b>You should see:</b> Gazebo opens with the greenhouse &mdash; a Husky robot, a UR5e arm, and rows of tomato plants.</div>
+  </div>
+  <div class="step">
+    <span class="num">2</span><h3>Check your OpenAI key (needed for steps 09, 10, and Lab 1.2)</h3>
+    <p>Steps 09, 10 and Lab 1.2 call an LLM. The key is <b>auto-loaded</b> from
+       <code class="inl">raise_ros2_ws/src/.env</code> (a line <code class="inl">OPENAI_API_KEY=sk-...</code>).
+       If those steps say <i>"no API key"</i>, ask an instructor to add it &mdash; nothing else to do.</p>
+    <div class="tip">Every new terminal already knows the robot commands &mdash; the workspace is sourced for you via <code class="inl">~/.bashrc</code>. Just open a tab and go.</div>
+  </div>
+
+  <h2 id="drive">1 &middot; Lab 1.1 &mdash; Drive &amp; Sense the Robot</h2>
+  <span class="pill">topics: publish &amp; subscribe</span>
+  <p class="muted">Each script opens a little menu. Follow the prompts; press <kbd>Ctrl</kbd>+<kbd>C</kbd> to quit and move on.</p>
+
+  <div class="step">
+    <span class="num">01</span><h3>Drive the base</h3>
+    <div class="cmd"><span class="prompt">$ </span>ros2 run raise2026_labs 01_drive_forward.py<button>Copy</button></div>
+    <div class="see"><b>Try:</b> forward, back, rotate. Watch the Husky move in Gazebo.</div>
+  </div>
+  <div class="step">
+    <span class="num">02</span><h3>Read the LiDAR</h3>
+    <div class="cmd"><span class="prompt">$ </span>ros2 run raise2026_labs 02_read_lidar.py<button>Copy</button></div>
+    <div class="see"><b>Try:</b> "nearest obstacle" &mdash; the distance changes as the robot faces a plant row.</div>
+  </div>
+  <div class="step">
+    <span class="num">03</span><h3>Read the camera</h3>
+    <div class="cmd"><span class="prompt">$ </span>ros2 run raise2026_labs 03_read_camera.py<button>Copy</button></div>
+    <div class="see"><b>Result:</b> saves a frame to <code class="inl">/tmp/raise_camera_frame.png</code> &mdash; open it to see what the robot sees.</div>
+  </div>
+  <div class="step">
+    <span class="num">04</span><h3>Aim the mast camera (PTZ)</h3>
+    <div class="cmd"><span class="prompt">$ </span>ros2 run raise2026_labs 04_aim_ptz.py<button>Copy</button></div>
+    <div class="see"><b>Try:</b> the look-around routine &mdash; the mast camera pans and tilts.</div>
+  </div>
+
+  <h2 id="skills">2 &middot; Lab 1.1 &mdash; Call Each Skill as a Service</h2>
+  <span class="pill amber">services = tools the LLM will use</span>
+  <p class="muted">These aliases do it all for you: they start the skill's server, run the client, and clean up when you quit. One word each.</p>
+  <table>
+    <tr><th>Command</th><th>Skill</th><th>What it does</th></tr>
+    <tr><td><code class="inl">05_d1</code></td><td>Gripper</td><td>open / close / rotate the gripper</td></tr>
+    <tr><td><code class="inl">06_d1</code></td><td>Arm</td><td>move the UR5e to a named pose</td></tr>
+    <tr><td><code class="inl">07_d1</code></td><td>Navigation</td><td>drive to a named waypoint (row 1, olive grove…)</td></tr>
+    <tr><td><code class="inl">08_d1</code></td><td>Detector</td><td>run YOLO object detection on a camera</td></tr>
+    <tr><td><code class="inl">09_d1</code></td><td>Inspector</td><td>ask a vision model for a plant-health verdict</td></tr>
+  </table>
+  <div class="step">
+    <span class="num">05</span><h3>Run a skill (example: the gripper)</h3>
+    <div class="cmd"><span class="prompt">$ </span>05_d1<button>Copy</button></div>
+    <p class="muted">Then try the others the same way:</p>
+    <div class="cmd"><span class="prompt">$ </span>06_d1   <span class="note"># arm</span>
+<span class="prompt">$ </span>07_d1   <span class="note"># navigation</span>
+<span class="prompt">$ </span>08_d1   <span class="note"># detector</span>
+<span class="prompt">$ </span>09_d1   <span class="note"># plant inspector (uses your API key)</span><button>Copy</button></div>
+    <div class="see"><b>09 says:</b> a verdict like <i>"healthy, confidence 0.88"</i> &mdash; that reply is exactly what the agent will read next.</div>
+  </div>
+
+  <h2 id="agent">3 &middot; Lab 1.1 &mdash; The Payoff: an LLM Chains the Skills</h2>
+  <span class="pill">the agent loop</span>
+  <div class="step">
+    <span class="num">10</span><h3>Start the agent (all 5 servers + the LLM orchestrator)</h3>
+    <div class="cmd"><span class="prompt">$ </span>10_d1<button>Copy</button></div>
+    <p>When it's ready, type a goal in plain English at the prompt, for example:</p>
+    <div class="cmd">drive to tomato row 1 and tell me if the plant on the left is healthy<button>Copy</button></div>
+    <div class="see"><b>Watch:</b> the LLM decides which tool to call, you see it navigate &rarr; aim &rarr; inspect, and it prints a final answer. That is an <b>agent</b>: LLM + tools + a loop.</div>
+  </div>
+
+  <h2 id="mission">4 &middot; Lab 1.2 &mdash; Give the Robot a Whole Mission</h2>
+  <span class="pill amber">autonomous inspection</span>
+  <p class="muted">Lab 1.1 took <i>one</i> goal. Lab 1.2's <code class="inl">agent.py</code> takes a <b>mission</b> and runs on its own &mdash; navigating, inspecting, recovering, and writing a report.</p>
+  <div class="step">
+    <span class="num">1</span><h3>Start the 5 skill servers (one terminal, one paste)</h3>
+    <div class="cmd"><span class="prompt">$ </span>ros2 run raise2026_tools gripper_server &amp;
+<span class="prompt">$ </span>ros2 run raise2026_tools move_to_pose_server &amp;
+<span class="prompt">$ </span>ros2 run raise2026_tools navigation_server &amp;
+<span class="prompt">$ </span>ros2 run raise2026_tools detector_server &amp;
+<span class="prompt">$ </span>ros2 run raise2026_tools inspector_server &amp;<button>Copy</button></div>
+    <div class="muted">The <code class="inl">&amp;</code> runs each server in the background so one terminal holds all five.</div>
+  </div>
+  <div class="step">
+    <span class="num">2</span><h3>Run the agent</h3>
+    <div class="cmd"><span class="prompt">$ </span>ros2 run raise2026_labs agent.py<button>Copy</button></div>
+    <div class="tip">Instructors may provide a one-command wrapper (<code class="inl">d1l2_agentic_inspector.sh</code>) that starts the sim, the 5 servers, and the agent together &mdash; use it if it's on your machine.</div>
+  </div>
+  <div class="step">
+    <span class="num">3</span><h3>Type a mission at the <code class="inl">mission &gt;</code> prompt</h3>
+    <div class="cmd">Inspect tomato row 1 on both sides and report which plants look unhealthy<button>Copy</button></div>
+    <div class="see"><b>Watch for:</b> the step-by-step trace (Thought &rarr; Action &rarr; Observation), recovery when a view is blocked, and a <b>field report</b> written to <code class="inl">/tmp</code>. More missions in <code class="inl">starter/mission_prompts.md</code>.</div>
+  </div>
+
+  <h2 id="handy">Handy Commands</h2>
+  <div class="step">
+    <h3>Drive it yourself (keyboard teleop)</h3>
+    <div class="cmd"><span class="prompt">$ </span>ros2 run raise2026_teleop teleop_keyboard<button>Copy</button></div>
+    <h3>See the wrist camera live</h3>
+    <div class="cmd"><span class="prompt">$ </span>ros2 run rqt_image_view rqt_image_view /wrist_camera/image_raw<button>Copy</button></div>
+    <h3>Stop the simulator</h3>
+    <div class="cmd"><span class="prompt">$ </span>raise-stop<button>Copy</button></div>
+  </div>
+
+  <h2 id="trouble">Troubleshooting</h2>
+  <div class="warn"><b>Sim won't launch or hangs?</b> Run <code class="inl">raise-stop</code>, then <code class="inl">raise-sim</code> from a <b>fresh terminal</b>.</div>
+  <div class="warn"><b>A skill server "not available"?</b> Use the <code class="inl">05_d1</code>…<code class="inl">10_d1</code> aliases &mdash; they start the server for you. If you ran a script directly, its server must already be up.</div>
+  <div class="warn"><b>Inspector says "unsure" / errors on 09 or 10?</b> Check your <code class="inl">OPENAI_API_KEY</code> in <code class="inl">raise_ros2_ws/src/.env</code>, and make sure the arm is aimed at a plant.</div>
+  <div class="warn"><b>Everything feels off after install?</b> Run <code class="inl">./bootstrap/smoke_test.sh</code> and read the pass/fail report.</div>
+
+</main>
+
+<footer>
+  RAISE 2026 Summer School &middot; Prof. Anis Koubaa &middot; Day 1 Hands-On (Labs 1.1 &amp; 1.2).
+  Commands map to <code>raise2026_labs</code> scripts <code>01</code>–<code>10</code> and <code>agent.py</code>.
+</footer>
+
+<script>
+  // Copy-to-clipboard: copies the command text of the block (prompts & notes stripped).
+  document.querySelectorAll('.cmd button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var block = btn.closest('.cmd').cloneNode(true);
+      block.querySelectorAll('.prompt,.note,button').forEach(function(n){ n.remove(); });
+      var text = block.textContent.replace(/ /g,' ').replace(/[ \t]+\n/g,'\n').trim();
+      navigator.clipboard.writeText(text).then(function(){
+        var old = btn.textContent; btn.textContent = 'Copied!'; btn.classList.add('done');
+        setTimeout(function(){ btn.textContent = old; btn.classList.remove('done'); }, 1200);
+      });
+    });
+  });
+</script>
+</body>
+</html>

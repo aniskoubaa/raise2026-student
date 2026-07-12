@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<!-- Author: Prof. Anis Koubaa <anis.koubaa@gmail.com> -->
+<!-- RAISE 2026 - Day 2 Hands-On: understand the dataset, then RUN the trained
+     SmolVLA (no training required). Self-contained; open in any browser. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAISE 2026 - Day 2 Hands-On</title>
+<style>
+  :root{
+    --green:#134E3F; --green2:#1E6F5C; --amber:#D97706; --amber-d:#B45309;
+    --ink:#1c2b26; --muted:#5c6b66; --line:#e3e9e6; --bg:#f6f8f7; --card:#ffffff;
+    --term-bg:#12241d; --term-ink:#e8f3ee; --ok:#2f855a; --warn:#b45309;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:var(--ink);background:var(--bg);line-height:1.55;}
+  a{color:var(--green2)}
+  header{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;padding:26px 20px 22px;}
+  header .wrap{max-width:860px;margin:0 auto}
+  header h1{margin:0 0 4px;font-size:1.7rem;letter-spacing:.2px}
+  header p{margin:0;opacity:.9;font-size:1.02rem}
+  header .leaf{font-size:1.3rem}
+  main{max-width:860px;margin:0 auto;padding:22px 20px 60px}
+  .lead{background:#fff8ec;border:1px solid #f2dcb3;border-left:5px solid var(--amber);
+        border-radius:10px;padding:14px 16px;margin:18px 0}
+  .lead b{color:var(--amber-d)}
+  h2{color:var(--green);border-bottom:2px solid var(--line);padding-bottom:6px;margin-top:38px;font-size:1.35rem}
+  h3{color:var(--green2);margin:22px 0 6px;font-size:1.08rem}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;
+        box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  .step .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+        background:var(--green);color:#fff;font-weight:700;font-size:.85rem;margin-right:8px;vertical-align:middle}
+  .step.hero{border:2px solid var(--amber);background:#fffdf8}
+  .step.hero .num{background:var(--amber)}
+  .step h3{display:inline;margin:0}
+  .step p{margin:8px 0}
+  .muted{color:var(--muted);font-size:.94rem}
+  .cmd{position:relative;background:var(--term-bg);color:var(--term-ink);border-radius:9px;
+       padding:12px 92px 12px 14px;margin:10px 0;font-family:"SF Mono",Menlo,Consolas,monospace;
+       font-size:.92rem;overflow-x:auto;white-space:pre}
+  .cmd .prompt{color:#7fd1ad;user-select:none}
+  .cmd .note{color:#8fb3a6;font-style:italic}
+  .cmd button{position:absolute;top:8px;right:8px;background:var(--amber);color:#fff;border:0;border-radius:6px;
+       padding:5px 12px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit}
+  .cmd button:hover{background:var(--amber-d)}
+  .cmd button.done{background:var(--ok)}
+  .see{border-left:3px solid var(--green2);background:#f0f6f3;border-radius:0 8px 8px 0;
+       padding:8px 12px;margin:8px 0;font-size:.93rem}
+  .see b{color:var(--green2)}
+  kbd{background:#eef2f0;border:1px solid #cdd8d3;border-bottom-width:2px;border-radius:5px;padding:1px 6px;
+      font-family:monospace;font-size:.85em}
+  code.inl{background:#eef2f0;border-radius:4px;padding:1px 6px;font-family:monospace;font-size:.9em;color:var(--green)}
+  .pill{display:inline-block;background:var(--green);color:#fff;border-radius:20px;padding:2px 12px;font-size:.8rem;
+        font-weight:600;margin-bottom:8px}
+  .pill.amber{background:var(--amber)}
+  table{border-collapse:collapse;width:100%;margin:10px 0;font-size:.92rem}
+  th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+  th{background:var(--green);color:#fff}
+  tr:nth-child(even) td{background:#f7faf9}
+  .tip{background:#eef6f1;border:1px solid #cfe4d8;border-radius:8px;padding:10px 14px;margin:12px 0;font-size:.94rem}
+  .warn{background:#fdf1e6;border:1px solid #f0d3ad;border-radius:8px;padding:10px 14px;margin:12px 0;font-size:.94rem}
+  details{background:#fff;border:1px dashed var(--line);border-radius:10px;padding:6px 16px;margin:14px 0}
+  details summary{cursor:pointer;font-weight:600;color:var(--green2);padding:8px 0}
+  footer{max-width:860px;margin:0 auto;padding:20px;color:var(--muted);font-size:.88rem;border-top:1px solid var(--line)}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:16px 0}
+  .toc a{display:inline-block;margin:3px 10px 3px 0}
+  @media (max-width:560px){ .cmd{padding-right:14px;padding-top:40px} .cmd button{top:6px;right:6px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <span class="leaf">🍅</span>
+    <h1>RAISE 2026 &mdash; Day 2 Hands-On</h1>
+    <p>Understand how the dataset is built &middot; then run the trained SmolVLA brain. Copy, paste, follow.</p>
+  </div>
+</header>
+
+<main>
+  <div class="lead">
+    <b>The goal today:</b> first understand <b>how a robot-learning dataset is built</b>
+    (Lab 2.1), then <b>run a SmolVLA policy</b> that picks the red tomato on its own
+    (Lab 2.2). <b>You do not train the model</b> &mdash; a reference checkpoint is provided,
+    and you run it. Training is an optional advanced step at the end.
+  </div>
+
+  <div class="toc">
+    <b>Jump to:</b>
+    <a href="#setup">Setup</a>
+    <a href="#understand">Understand the Dataset</a>
+    <a href="#build">Lab 2.1 &middot; Build the Dataset</a>
+    <a href="#run">Lab 2.2 &middot; Run SmolVLA</a>
+    <a href="#train">Optional &middot; Train Your Own</a>
+    <a href="#trouble">Troubleshooting</a>
+  </div>
+
+  <h2 id="setup">0 &middot; Before you start</h2>
+  <div class="tip"><b>One rule for Day 2:</b> use the <b>aliases</b> (<code class="inl">01_d3</code>, <code class="inl">05_d3</code>,
+    <code class="inl">06_d3</code>, <code class="inl">grasp_d3</code>, <code class="inl">vla_d4</code>). They run the correct
+    Python (the LeRobot virtual-env) for you. Plain <code class="inl">ros2 run</code> only works for scripts 01 and 02.</div>
+  <div class="step">
+    <span class="num">1</span><h3>Launch the simulator</h3>
+    <p>Open a terminal, start the sim, and <b>leave it running</b>. Open a new terminal for each command after this.</p>
+    <div class="cmd"><span class="prompt">$ </span>raise-sim<button>Copy</button></div>
+  </div>
+  <div class="step">
+    <span class="num">2</span><h3>Start the grasp server (needed to pick anything)</h3>
+    <p>The grasp server <b>is</b> the sim's grasp physics &mdash; recording <i>and</i> running the VLA both need it. Leave it running too.</p>
+    <div class="cmd"><span class="prompt">$ </span>grasp_d3<button>Copy</button></div>
+  </div>
+
+  <h2 id="understand">1 &middot; Understand the Dataset (read this first)</h2>
+  <span class="pill">what the model learns from</span>
+  <p>A VLA learns to <b>copy demonstrations</b>. Each demonstration is recorded as a
+     stream of <b>frames</b> at 10&nbsp;Hz. One frame is four things captured at the same instant:</p>
+  <table>
+    <tr><th>Field</th><th>Shape</th><th>Meaning</th></tr>
+    <tr><td><code class="inl">observation.images.wrist</code></td><td>224&times;224&times;3</td><td>what the robot <b>sees</b> (wrist camera)</td></tr>
+    <tr><td><code class="inl">observation.state</code></td><td>7 floats</td><td>where the arm <b>is</b> &mdash; 6 joint angles + gripper (measured)</td></tr>
+    <tr><td><code class="inl">action</code></td><td>7 floats</td><td>what it is <b>told to do</b> &mdash; the joint <b>command</b></td></tr>
+    <tr><td><code class="inl">task</code></td><td>text</td><td>the words: <i>"pick the red tomato"</i></td></tr>
+  </table>
+  <div class="see"><b>Key idea:</b> the <code class="inl">action</code> stores the <b>command</b> (what the demonstrator
+    <i>intended</i>), not the measured pose (which lags). Cloning the intent is what teaches the motion.</div>
+  <p class="muted">The reference dataset ships as <b>50 episodes &middot; ~86 frames each &middot; 4325 training examples</b>
+     (LeRobot v3.0 format: Parquet for the numbers, video for the images). Stack the frames &rarr; the model learns
+     reach &rarr; grasp &rarr; lift &rarr; place, one 100&nbsp;ms decision at a time.</p>
+  <p><b>The pipeline you'll run:</b></p>
+  <div style="background:#f0f6f3;border:1px solid #cfe4d8;border-radius:9px;padding:12px 14px;margin:10px 0;
+       font-family:'SF Mono',Menlo,Consolas,monospace;font-size:.88rem;overflow-x:auto;white-space:pre;color:var(--green)">demonstrate (teleop or auto)  &rarr;  record frames @10Hz  &rarr;  LeRobot episode  &rarr;  replay-check  &rarr;  (fine-tune, provided)  &rarr;  run</div>
+
+  <h2 id="build">2 &middot; Lab 2.1 &mdash; Build the Dataset</h2>
+  <span class="pill amber">record demonstrations</span>
+
+  <div class="step">
+    <span class="num">1</span><h3>Pre-flight: watch the streams the VLA learns from</h3>
+    <div class="cmd"><span class="prompt">$ </span>02_d3<button>Copy</button></div>
+    <div class="see"><b>You should see:</b> the live <code class="inl">/wrist_camera</code> image and <code class="inl">/joint_states</code> &mdash; exactly the inputs a frame captures.</div>
+  </div>
+
+  <div class="step">
+    <span class="num">2</span><h3>Feel why teleop is hard (optional, ~10 min)</h3>
+    <p>Drive the arm yourself, then record a few frames while you drive. This makes you appreciate the auto-demonstrator.</p>
+    <div class="cmd"><span class="prompt">$ </span>01_d3   <span class="note"># keyboard teleop of the arm + gripper</span><button>Copy</button></div>
+    <div class="cmd"><span class="prompt">$ </span>03_d3   <span class="note"># record LeRobot episodes while YOU drive</span><button>Copy</button></div>
+  </div>
+
+  <div class="step hero">
+    <span class="num">3</span><h3>Recommended: record hands-free with the auto-demonstrator</h3>
+    <p>A scripted expert scans (looks above-left, then right), picks the red tomato it <i>sees</i>, alternating sides &mdash; every grasp verified. Records ~50 clean episodes with no driving. Replace <code class="inl">team07</code> with your team id.</p>
+    <div class="cmd"><span class="prompt">$ </span>05_d3 --episodes 50 --team team07 --hf-user me<button>Copy</button></div>
+    <div class="see"><b>Needs:</b> <code class="inl">raise-sim</code> and <code class="inl">grasp_d3</code> running (Setup above). Takes ~25 min, hands-free.</div>
+  </div>
+
+  <div class="step">
+    <span class="num">4</span><h3>Verify: replay an episode and watch the pick (THE data check)</h3>
+    <p>Never trust data you haven't replayed. This plays episode 0 back into the sim so you can watch the recorded pick actually happen.</p>
+    <div class="cmd"><span class="prompt">$ </span>06_d3 --task C --team team07 --hf-user me --episode 0 --spawn<button>Copy</button></div>
+    <div class="see"><b>Deliverable:</b> a LeRobot dataset (50 episodes, task C) that <b>replays as a clean pick</b>. That is a dataset good enough to train on.</div>
+  </div>
+
+  <h2 id="run">3 &middot; Lab 2.2 &mdash; Run the Trained SmolVLA (the payoff)</h2>
+  <span class="pill amber">run the model &mdash; no training</span>
+  <p>Now command a <b>trained</b> policy. The reference checkpoint is already trained for you;
+     the executor loads it automatically. You just run it and watch it pick.</p>
+
+  <div class="step hero">
+    <span class="num">1</span><h3>Three terminals: sim, grasp server, executor</h3>
+    <div class="cmd"><span class="prompt">$ </span>raise-sim   <span class="note"># terminal 1 (if not already running)</span><button>Copy</button></div>
+    <div class="cmd"><span class="prompt">$ </span>grasp_d3    <span class="note"># terminal 2 - it IS the grasp; must run</span><button>Copy</button></div>
+    <div class="cmd"><span class="prompt">$ </span>vla_d4 --task C --spawn --instruction "pick the red tomato"<button>Copy</button></div>
+    <div class="see"><b>What happens:</b> <code class="inl">--spawn</code> places a red + green tomato at the trained grasp points,
+      then SmolVLA sees the wrist camera, reads your instruction, and drives the arm to pick the <b>red</b> one &mdash; ~10&nbsp;ms per decision.</div>
+  </div>
+  <div class="tip"><b>Which model runs?</b> If <code class="inl">VLA_LOCAL_CKPT</code> is unset, <code class="inl">vla_d4</code>
+    <b>auto-uses the local reference checkpoint</b> &mdash; a model already trained on the dataset above. Nothing to train.
+    The reference model scores <b>100/100</b> on the graded trials.</div>
+  <div class="step">
+    <span class="num">2</span><h3>Try variations</h3>
+    <div class="cmd"><span class="prompt">$ </span>vla_d4 --task C --spawn --red-side right --instruction "pick the red tomato"<button>Copy</button></div>
+    <div class="muted">Flip which side the red tomato spawns, or change the instruction, and watch the policy adapt.</div>
+  </div>
+
+  <h2 id="train">4 &middot; Optional (advanced) &mdash; Train Your Own Brain</h2>
+  <p class="muted">Not required today. If you finished early and want to fine-tune SmolVLA on <i>your</i> Lab-2.1 dataset:</p>
+  <details>
+    <summary>Show the training path (runs in the background; hours, not minutes)</summary>
+    <div class="cmd"><span class="prompt">$ </span>finetune_d4 --task C --team team07 --hf-user me --steps 6000 --launch<button>Copy</button></div>
+    <div class="cmd"><span class="prompt">$ </span>tail -f ~/raise_checkpoints/smolvla_C_team07.train.log   <span class="note"># watch it learn</span><button>Copy</button></div>
+    <p class="muted">When it finishes, point the executor at your checkpoint and run it the same way:</p>
+    <div class="cmd"><span class="prompt">$ </span>export VLA_LOCAL_CKPT=~/raise_checkpoints/smolvla_C_team07/checkpoints/last/pretrained_model
+<span class="prompt">$ </span>vla_d4 --task C --spawn --instruction "pick the red tomato"<button>Copy</button></div>
+    <div class="tip">Fine-tuning starts from the pretrained <code class="inl">smolvla_base</code> backbone, so a few thousand steps on ~4325 frames is enough to specialise it &mdash; you are not training from scratch.</div>
+  </details>
+
+  <h2 id="trouble">Troubleshooting</h2>
+  <div class="warn"><b>"lerobot / smolvla not found" or a Python import error?</b> You ran a script directly instead of via an alias.
+    Use <code class="inl">05_d3</code> / <code class="inl">06_d3</code> / <code class="inl">vla_d4</code> &mdash; they use the LeRobot venv Python for you.</div>
+  <div class="warn"><b>Nothing gets picked?</b> Make sure <code class="inl">grasp_d3</code> is running &mdash; it is the grasp physics. Recording and running both need it.</div>
+  <div class="warn"><b>Run 1 works, runs 2+ time out?</b> Restart the executor between trials &mdash; a fresh run clears stale state.</div>
+  <div class="warn"><b>Sim misbehaving?</b> <code class="inl">raise-stop</code>, then <code class="inl">raise-sim</code> from a fresh terminal.</div>
+
+</main>
+
+<footer>
+  RAISE 2026 Summer School &middot; Prof. Anis Koubaa &middot; Day 2 Hands-On (Labs 2.1 &amp; 2.2).
+  Aliases: <code>01_d3</code>&ndash;<code>06_d3</code> (data), <code>grasp_d3</code>, <code>vla_d4</code> (run), <code>finetune_d4</code> (optional train).
+</footer>
+
+<script>
+  document.querySelectorAll('.cmd button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var block = btn.closest('.cmd').cloneNode(true);
+      block.querySelectorAll('.prompt,.note,button').forEach(function(n){ n.remove(); });
+      var text = block.textContent.replace(/[ \t]+\n/g,'\n').trim();
+      navigator.clipboard.writeText(text).then(function(){
+        var old = btn.textContent; btn.textContent = 'Copied!'; btn.classList.add('done');
+        setTimeout(function(){ btn.textContent = old; btn.classList.remove('done'); }, 1200);
+      });
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# colcon build output
+build/
+install/
+log/
+# python
+__pycache__/
+*.pyc
+# secrets (never commit)
+.env
+*.env
+# the large pre-trained checkpoint is handed over separately, not tracked
+checkpoints/*
+!checkpoints/README.md
+# LaTeX / OS junk
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+.DS_Store

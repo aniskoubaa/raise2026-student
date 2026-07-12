@@ -1,0 +1,32 @@
+# Author: Prof. Anis Koubaa <anis.koubaa@gmail.com>
+# RAISE 2026 — CPU default compose file.
+# Source the env file: docker compose --env-file ../.env -f docker-compose.yml ...
+# install_docker.sh handles this for you.
+
+services:
+  raise2026:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        HOST_UID: "${HOST_UID:-1000}"
+        HOST_GID: "${HOST_GID:-1000}"
+    image: raise2026-sim:latest
+    container_name: raise2026
+    # host network + ipc keeps ROS 2 DDS discovery simple and lets X11 work without
+    # extra socket gymnastics. Linux-only; macOS/Windows need a different bridge.
+    network_mode: host
+    ipc: host
+    environment:
+      DISPLAY: "${DISPLAY:-:0}"
+      RAISE_HW_TIER: "${RAISE_HW_TIER:-CPU_ONLY}"
+      GZ_RENDER_ENGINE: "${GZ_RENDER_ENGINE:-ogre}"
+      RAISE_VLA_BACKEND: "${RAISE_VLA_BACKEND:-remote}"
+      RAISE_VLA_ENDPOINT: "${RAISE_VLA_ENDPOINT:-https://TBD}"
+    volumes:
+      - ../../raise_ros2_ws:/raise_ros2_ws
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    working_dir: /raise_ros2_ws
+    stdin_open: true
+    tty: true
+    command: bash

@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Author: Prof. Anis Koubaa <anis.koubaa@gmail.com>
+# RAISE 2026 — stop any running simulation cleanly.
+#
+# Sends SIGINT first (graceful), waits, then SIGKILL anything still alive.
+# Targets the ros2 launch, the gz sim wrapper, the gz sim server/gui, and the
+# ros_gz bridge / create / robot_state_publisher children.
+
+set -uo pipefail
+
+# Patterns that match our sim's processes — careful to avoid matching the
+# `pkill -f` invocation itself (it'd kill its own bash on `gz sim` pattern).
+# So we use pgrep to collect PIDs first, then kill by PID.
+PATTERNS=(
+  'ros2 launch raise2026'
+  'gz sim'
+  'parameter_bridge'
+  'ros_gz_sim/create'
+  'robot_state_publisher.*launch_params'
+)
+
+collect() {
+  local p
+  local pids=()
+  for p in "${PATTERNS[@]}"; do
+    while read -r pid; do
+      [ -n "$pid" ] && [ "$pid" != "$$" ] && pids+=("$pid")
+    done < <(pgrep -f "$p" 2>/dev/null || true)
+  done
+  printf '%s\n' "${pids[@]}" | sort -u | grep -v '^$' || true
+}
+
+PIDS=$(collect | tr '\n' ' ')
+
+if [ -z "${PIDS// }" ]; then
+  echo "raise-stop: no running sim found."
+  exit 0
+fi
+
+echo "raise-stop: SIGINT → ${PIDS}"
+kill -INT $PIDS 2>/dev/null || true
+sleep 2
+
+REMAINING=$(collect | tr '\n' ' ')
+if [ -n "${REMAINING// }" ]; then
+  echo "raise-stop: SIGKILL → ${REMAINING}"
+  kill -9 $REMAINING 2>/dev/null || true
+fi
+
+echo "raise-stop: done."
