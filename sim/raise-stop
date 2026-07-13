@@ -17,6 +17,8 @@ PATTERNS=(
   'parameter_bridge'
   'ros_gz_sim/create'
   'robot_state_publisher.*launch_params'
+  'raise2026_teleop.teleop_phone'
+  'raise2026_teleop.teleop_keyboard'
 )
 
 collect() {

@@ -21,22 +21,23 @@ your own machine.
 | `checkpoints/` | Where the **pre-trained SmolVLA model** goes (handed to you on Day 1 — see the README there). |
 | `GETTING_STARTED.md` | How to launch and verify the simulator. |
 
-## Quick start
+## Quick start — ONE command
 
-**1 — Before the school:** open `setup_kit/index.html` and follow it. Run
-`setup_kit/scripts/check_setup.sh` at the end and send the instructors the summary.
-
-**2 — Install & build the course** (once, ~5–10 min — this step builds the
-ROS 2 workspace; without it there is no `raise-sim`):
 ```bash
-cd sim && ./install.sh
+./start.sh
 ```
 
-**3 — Launch the robot:**
-```bash
-raise-sim          # opens the greenhouse simulator (leave it running)
-```
-See `GETTING_STARTED.md` for details and the verify steps.
+That's it. On a fresh Ubuntu 24.04 machine it **installs everything**
+(ROS 2 Jazzy, Gazebo, all dependencies, the Day-2 AI toolkit — sudo asks
+once, ~30–60 min), **builds** the workspace, then **launches**:
+
+- 🖥 the greenhouse simulator (Gazebo window)
+- ⌨ keyboard driving in your terminal (`w/a/s/d`, SPACE = stop)
+- 📱 the phone web interface — it prints `http://<your-ip>:5000` (same WiFi)
+
+Every later run skips the install and launches in ~15 s. `Ctrl-C` stops
+everything. (Prefer the pieces separately? `setup_kit/index.html` +
+`cd sim && ./install.sh` + `raise-sim` — see `GETTING_STARTED.md`.)
 
 **4 — Day 1 labs** (ROS 2 tools → an LLM agent): open
 [`lab_guides/lab1_handson.html`](lab_guides/lab1_handson.html) and follow it, copy-paste.

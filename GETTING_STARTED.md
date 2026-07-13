@@ -6,12 +6,16 @@
 - **Native Ubuntu 24.04** (→ ROS 2 Jazzy) — the only supported platform
 - Internet + `sudo` password
 
-## Fastest path — two commands on a fresh Ubuntu 24.04 machine
+## Fastest path — clone + one command
 
 ```bash
 git clone https://github.com/aniskoubaa/raise2026-student
-cd raise2026-student && ./sim/install.sh
+cd raise2026-student && ./start.sh
 ```
+
+Installs everything (first run only), builds, then launches the simulator
+with keyboard teleop AND the phone web interface (URL printed). Ctrl-C stops
+it all; re-run `./start.sh` anytime.
 
 ## Install (already cloned, once, ~5–10 min)
 
