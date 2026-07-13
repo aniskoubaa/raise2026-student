@@ -202,6 +202,10 @@
 
   <h2 id="trouble">Troubleshooting</h2>
   <div class="warn"><b>Sim won't launch or hangs?</b> Run <code class="inl">raise-stop</code>, then <code class="inl">raise-sim</code> from a <b>fresh terminal</b>.</div>
+  <div class="warn"><b>Gazebo opens but says "Insert plugins to start!" (empty window, no robot)?</b> A stale Gazebo GUI cache is loaded. Clear it and relaunch:
+    <div class="cmd"><span class="prompt">$ </span>rm -rf ~/.gz/sim<button>Copy</button></div>
+    <div class="cmd"><span class="prompt">$ </span>raise-sim<button>Copy</button></div>
+    The greenhouse and robot will now appear. (The red <code class="inl">gz_frame_id</code> / mimic-constraint warnings in the terminal are harmless.)</div>
   <div class="warn"><b>A skill server "not available"?</b> Use the <code class="inl">05_d1</code>…<code class="inl">10_d1</code> aliases &mdash; they start the server for you. If you ran a script directly, its server must already be up.</div>
   <div class="warn"><b>Inspector says "unsure" / errors on 09 or 10?</b> Check your <code class="inl">OPENAI_API_KEY</code> in <code class="inl">raise_ros2_ws/src/.env</code>, and make sure the arm is aimed at a plant.</div>
   <div class="warn"><b>Everything feels off after install?</b> Run <code class="inl">./bootstrap/smoke_test.sh</code> and read the pass/fail report.</div>

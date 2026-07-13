@@ -202,6 +202,7 @@
   <div class="warn"><b>Nothing gets picked?</b> Make sure <code class="inl">grasp_d3</code> is running &mdash; it is the grasp physics. Recording and running both need it.</div>
   <div class="warn"><b>Run 1 works, runs 2+ time out?</b> Restart the executor between trials &mdash; a fresh run clears stale state.</div>
   <div class="warn"><b>Sim misbehaving?</b> <code class="inl">raise-stop</code>, then <code class="inl">raise-sim</code> from a fresh terminal.</div>
+  <div class="warn"><b>Gazebo says "Insert plugins to start!" (empty window)?</b> Clear the stale GUI cache: <code class="inl">rm -rf ~/.gz/sim</code>, then <code class="inl">raise-sim</code>.</div>
 
 </main>
 
