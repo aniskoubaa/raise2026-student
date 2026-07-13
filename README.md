@@ -26,16 +26,22 @@ your own machine.
 **1 — Before the school:** open `setup_kit/index.html` and follow it. Run
 `setup_kit/scripts/check_setup.sh` at the end and send the instructors the summary.
 
-**2 — Launch the robot** (after setup + you have the code):
+**2 — Install & build the course** (once, ~5–10 min — this step builds the
+ROS 2 workspace; without it there is no `raise-sim`):
+```bash
+cd sim && ./install.sh
+```
+
+**3 — Launch the robot:**
 ```bash
 raise-sim          # opens the greenhouse simulator (leave it running)
 ```
 See `GETTING_STARTED.md` for details and the verify steps.
 
-**3 — Day 1 labs** (ROS 2 tools → an LLM agent): open
+**4 — Day 1 labs** (ROS 2 tools → an LLM agent): open
 [`lab_guides/lab1_handson.html`](lab_guides/lab1_handson.html) and follow it, copy-paste.
 
-**4 — Day 2 labs** (build the dataset → run the SmolVLA model): open
+**5 — Day 2 labs** (build the dataset → run the SmolVLA model): open
 [`lab_guides/lab2_handson.html`](lab_guides/lab2_handson.html). You **run** the
 provided model — no training required.
 

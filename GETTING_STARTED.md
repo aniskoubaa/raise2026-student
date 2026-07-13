@@ -3,36 +3,29 @@
 5 minutes from `git clone` to driving a robot in a simulated Sfax greenhouse.
 
 ## Prerequisites
-- **Ubuntu 24.04** → ROS 2 Jazzy — ✅ tested reference platform
-- Ubuntu 22.04 → ROS 2 Humble — ⚠️ untested / best-effort (use Docker if it misbehaves)
-- Any other OS (incl. WSL) → use the **Docker path** (always Jazzy)
+- **Native Ubuntu 24.04** (→ ROS 2 Jazzy) — the only supported platform
 - Internet + `sudo` password
-- Docker is **not** required up front — the Docker path installs it for you.
 
-## Fastest path — one command on a fresh machine
-
-Clones the repo and runs the installer in one shot:
+## Fastest path — two commands on a fresh Ubuntu 24.04 machine
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/aniskoubaa/raise_summer_school/main/RAISE2026/sim/bootstrap/bootstrap.sh | bash
+git clone https://github.com/aniskoubaa/raise2026-student
+cd raise2026-student && ./sim/install.sh
 ```
 
 ## Install (already cloned, once, ~5–10 min)
 
 ```bash
-cd RAISE2026/sim
-./install.sh                    # guided: detects your HW + distro, asks native vs docker
-# or call a path directly:
-./bootstrap/install_native.sh   # 24.04/Jazzy (tested) or 22.04/Humble (untested)
-./bootstrap/install_docker.sh   # Docker (Jazzy image) — auto-installs Docker if missing
+cd sim              # ← from the repo root (this repo has sim/ at the top level)
+./install.sh        # guided: detects your hardware, installs, BUILDS the workspace
 ```
 
-Installs ROS 2 (Jazzy on 24.04, Humble on 22.04), Gazebo Harmonic, all robot packages, builds the workspace, configures the firewall, and installs the `raise-sim` / `raise-stop` commands. It finishes by running a **smoke test** that verifies everything works and prints a pass/fail report.
+Installs ROS 2 Jazzy, Gazebo Harmonic, all robot packages, builds the workspace, configures the firewall, and installs the `raise-sim` / `raise-stop` commands. It finishes by running a **smoke test** that verifies everything works and prints a pass/fail report.
 
 ## Verify the install anytime
 
 ```bash
-cd RAISE2026/sim
+cd sim
 ./bootstrap/smoke_test.sh        # ROS 2 + build + Gazebo Harmonic + Python imports
 ```
 
@@ -78,12 +71,11 @@ raise-stop
 - Keys don't register → use a real terminal (gnome-terminal, terminator). VS Code's integrated terminal can swallow some keys.
 - Phone can't reach the laptop → same WiFi, then `sudo ufw allow 5000`.
 - Something feels off after install → run `./bootstrap/smoke_test.sh` and read the report.
-- On Ubuntu 22.04 (Humble, untested) and hitting trouble → fall back to the Docker path: `./bootstrap/install_docker.sh` (always Jazzy).
 
 ## What's where
 
 ```
-RAISE2026/
+raise2026-student/
 ├── raise_ros2_ws/                          ROS 2 packages
 │   └── src/
 │       ├── raise2026_description/          robot URDF (Husky + UR5e + RealSense)
