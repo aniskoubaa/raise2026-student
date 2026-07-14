@@ -31,8 +31,13 @@ import sys
 import tarfile
 from pathlib import Path
 
-DAY2 = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(DAY2 / 'task_packs' / 'common'))
+try:
+    import _d2paths                    # installed next to the ros2-run scripts
+except ImportError:                    # running straight from the source tree
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    import _d2paths
+_d2paths.bootstrap(lerobot=False)
+DAY2 = _d2paths.DAY2
 from task_pack import load_task   # noqa: E402
 
 
@@ -49,7 +54,7 @@ def main():
     ap.add_argument('--task', default='A', help='A | C | B')
     ap.add_argument('--team', default='team00')
     ap.add_argument('--hf-user', default='raiseschool')
-    ap.add_argument('--root', default=str(DAY2.parents[3] / 'datasets'))
+    ap.add_argument('--root', default=str(_d2paths.DATASETS_DIR))
     ap.add_argument('--server', default='http://localhost:8000', help='shared GPU server base URL')
     args = ap.parse_args()
 

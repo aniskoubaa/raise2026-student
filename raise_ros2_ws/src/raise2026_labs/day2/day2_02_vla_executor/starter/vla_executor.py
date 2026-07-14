@@ -54,9 +54,13 @@ from std_msgs.msg import Float64, String
 from geometry_msgs.msg import Twist
 from tf2_ros import Buffer, TransformListener
 
-DAY2 = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(DAY2 / 'api_clients'))
-sys.path.insert(0, str(DAY2 / 'task_packs' / 'common'))
+try:
+    import _d2paths                    # installed next to the ros2-run scripts
+except ImportError:                    # running straight from the source tree
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    import _d2paths
+_d2paths.bootstrap(lerobot=True)
+DAY2 = _d2paths.DAY2
 from vla_client import make_vla_client, ExecutionResult                    # noqa: E402
 from vla_client.base import UR5E_JOINTS, GRIPPER_KNUCKLE, GRIPPER_MIMIC_SIGNS, GRIPPER_OPEN   # noqa: E402
 from vla_client.ros_image import imgmsg_to_rgb, resize_rgb                 # noqa: E402

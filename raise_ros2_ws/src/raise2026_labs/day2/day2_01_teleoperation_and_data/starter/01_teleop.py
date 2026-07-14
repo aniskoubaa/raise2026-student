@@ -41,8 +41,13 @@ from geometry_msgs.msg import Twist
 
 # Make the shared vla_client package importable from this starter script.
 # (api_clients/ lives two levels up, under day2/.)
-DAY2 = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(DAY2 / 'api_clients'))
+try:
+    import _d2paths                    # installed next to the ros2-run scripts
+except ImportError:                    # running straight from the source tree
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    import _d2paths
+_d2paths.bootstrap(lerobot=False)
+DAY2 = _d2paths.DAY2
 from vla_client.base import (   # noqa: E402
     UR5E_JOINTS, JOINT_LIMITS,
     GRIPPER_KNUCKLE, GRIPPER_MIMIC_SIGNS, GRIPPER_OPEN, GRIPPER_CLOSED,
@@ -59,10 +64,16 @@ HELP = """
 ┌──────────────── RAISE 2026 teleop ────────────────┐
 │ Arm joints:  1..6 = +{step}rad   q w e r t y = -{step}rad
 │ Gripper:     o = open      c = close
-│ Base (B):    i/k = fwd/back   j/l = turn   (space = stop)
+│ Base:        {base_row}
 │ Misc:        h = help        x = quit
 └────────────────────────────────────────────────────┘
 """
+BASE_ROW_ON = "i/k = fwd/back   j/l = turn   (space = stop)"
+BASE_ROW_OFF = "OFF in this mode — restart with --task B to drive the Husky"
+
+
+def help_text(enable_base: bool) -> str:
+    return HELP.format(step=STEP, base_row=BASE_ROW_ON if enable_base else BASE_ROW_OFF)
 
 
 class Teleop(Node):
@@ -100,6 +111,9 @@ class Teleop(Node):
             t = Twist()
             t.linear.x, t.angular.z = lin, ang
             self.base_pub.publish(t)
+        else:
+            # Student report 2026-07-14: keys looked dead. Say WHY, loudly.
+            print('  (base driving is OFF — restart with:  01_d3 --task B)')
 
     def handle_key(self, k: str) -> bool:
         """Apply one keypress. Return False to quit."""
@@ -125,7 +139,7 @@ class Teleop(Node):
         elif k == ' ':
             self.publish_base(0.0, 0.0)
         elif k == 'h':
-            print(HELP.format(step=STEP))
+            print(help_text(self.enable_base))
         elif k == 'x':
             return False
         return True
@@ -149,7 +163,7 @@ def main():
 
     rclpy.init()
     node = Teleop(enable_base=args.task.upper() == 'B')
-    print(HELP.format(step=STEP))
+    print(help_text(node.enable_base))
     try:
         while rclpy.ok():
             rclpy.spin_once(node, timeout_sec=0.0)

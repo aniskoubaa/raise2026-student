@@ -33,8 +33,13 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image, JointState
 
-DAY2 = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(DAY2 / 'api_clients'))
+try:
+    import _d2paths                    # installed next to the ros2-run scripts
+except ImportError:                    # running straight from the source tree
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    import _d2paths
+_d2paths.bootstrap(lerobot=False)
+DAY2 = _d2paths.DAY2
 from vla_client.base import UR5E_JOINTS, GRIPPER_KNUCKLE   # noqa: E402
 from vla_client.ros_image import imgmsg_to_rgb              # noqa: E402  (no cv_bridge)
 

@@ -235,12 +235,12 @@ cat <<EOF
 
 Everything heavy is now on your machine: ROS 2 Jazzy, Gazebo Harmonic, all lab
 dependencies, and the Day-2 LeRobot AI toolkit.
+
 EOF
 
-# ── 11b. This kit lives INSIDE the course repo → build the course NOW ───────
-# (Student report 2026-07-13: following the docs left the workspace unbuilt
-#  and `raise-sim` missing — the build is part of preparation, not a separate
-#  Day-1 step.)
+# ── This kit may live INSIDE the course repo → build the course NOW ─────────
+# (Student report 2026-07-13: docs left the workspace unbuilt; the build is
+#  part of preparation, not a separate step.)
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 if [[ -x "${REPO_ROOT}/sim/install.sh" && -d "${REPO_ROOT}/raise_ros2_ws" ]]; then
   echo
@@ -252,11 +252,11 @@ if [[ -x "${REPO_ROOT}/sim/install.sh" && -d "${REPO_ROOT}/raise_ros2_ws" ]]; th
     echo "            cd ${REPO_ROOT}/sim && ./install.sh"
   fi
 else
-  cat <<'EOF'
+  cat <<'EOM'
 Next step — build the course code (from the course repo):
     cd <course-repo>/sim  &&  ./install.sh
 It builds the workspace in ~2 minutes because the heavy parts are done.
-EOF
+EOM
 fi
 
 # ── 12. Final verification ──────────────────────────────────────────────────

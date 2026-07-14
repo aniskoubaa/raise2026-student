@@ -46,9 +46,13 @@ from sensor_msgs.msg import Image, JointState
 from std_msgs.msg import Float64, String
 from tf2_ros import Buffer, TransformListener
 
-DAY2 = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(DAY2 / 'api_clients'))
-sys.path.insert(0, str(DAY2 / 'task_packs' / 'common'))
+try:
+    import _d2paths                    # installed next to the ros2-run scripts
+except ImportError:                    # running straight from the source tree
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    import _d2paths
+_d2paths.bootstrap(lerobot=True)
+DAY2 = _d2paths.DAY2
 from vla_client.base import (   # noqa: E402
     UR5E_JOINTS, GRIPPER_KNUCKLE, GRIPPER_MIMIC_SIGNS, GRIPPER_OPEN, GRIPPER_CLOSED,
 )
@@ -200,7 +204,7 @@ def main():
     ap.add_argument('--gripper-link', default=GRIPPER_LINK)
     ap.add_argument('--team', default='team00')
     ap.add_argument('--hf-user', default='raiseschool')
-    ap.add_argument('--data-root', default=str(DAY2.parents[3] / 'datasets'),
+    ap.add_argument('--data-root', default=str(_d2paths.DATASETS_DIR),
                     help='datasets live INSIDE the repo (RAISE2026/datasets) so everything is versioned together')
     ap.add_argument('--dry-run', action='store_true',
                     help='run the full pick choreography but save NOTHING — '

@@ -43,9 +43,13 @@ from rclpy.node import Node
 from sensor_msgs.msg import Image, JointState
 from std_msgs.msg import Float64
 
-DAY2 = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(DAY2 / 'api_clients'))
-sys.path.insert(0, str(DAY2 / 'task_packs' / 'common'))
+try:
+    import _d2paths                    # installed next to the ros2-run scripts
+except ImportError:                    # running straight from the source tree
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    import _d2paths
+_d2paths.bootstrap(lerobot=True)
+DAY2 = _d2paths.DAY2
 from vla_client.base import UR5E_JOINTS, GRIPPER_KNUCKLE, GRIPPER_OPEN   # noqa: E402
 from vla_client.ros_image import imgmsg_to_rgb, resize_rgb   # noqa: E402  (no cv_bridge — numpy-2 safe)
 from task_pack import load_task                                          # noqa: E402
@@ -135,7 +139,7 @@ def main():
     ap.add_argument('--team', default='team00', help='your team id (names the dataset)')
     ap.add_argument('--hf-user', default='raiseschool', help='HF/username prefix for the dataset')
     ap.add_argument('--episodes', type=int, default=None, help='target episode count (default = pack recommendation)')
-    ap.add_argument('--root', default=str(DAY2.parents[3] / 'datasets'), help='local dataset root')
+    ap.add_argument('--root', default=str(_d2paths.DATASETS_DIR), help='local dataset root')
     args = ap.parse_args()
 
     pack = load_task(args.task)

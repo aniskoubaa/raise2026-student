@@ -85,6 +85,35 @@ def lab_readme_data_files():
     return files
 
 
+def day2_lib_data_files():
+    """Ship the Day-2 shared libraries with the install (copied-build proof).
+
+    The starters import vla_client/task_pack/sim_poses from the SOURCE tree via
+    _d2paths.py. On installs where colcon COPIES sources (student report
+    2026-07-11: ModuleNotFoundError: vla_client via `ros2 run`), the source
+    tree may not be resolvable from the installed script — so we also install
+    the libs under share/raise2026_labs/day2_lib/ and _d2paths falls back to
+    them. _d2paths.py itself is installed NEXT TO the scripts (lib/…) so the
+    starters can always `import _d2paths` first.
+    """
+    files = [(f'lib/{package_name}', ['day2/_d2paths.py'])]
+    patterns = [
+        'day2/_d2paths.py',
+        'day2/api_clients/vla_client/*.py',
+        'day2/task_packs/common/*.py',
+        'day2/task_packs/task_*/*.yaml',
+    ]
+    for pat in patterns:
+        for f in sorted(glob(pat)):
+            rel_dir = os.path.dirname(f).replace('day2', 'day2_lib', 1)
+            files.append((f'share/{package_name}/{rel_dir}', [f]))
+    # de-duplicate targets (data_files allows repeated dirs, but keep it tidy)
+    merged = {}
+    for target, fl in files:
+        merged.setdefault(target, []).extend(fl)
+    return [(t, sorted(set(fl))) for t, fl in merged.items()]
+
+
 setup(
     name=package_name,
     version='0.1.0',
@@ -92,7 +121,7 @@ setup(
     data_files=[
         ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-    ] + lab_readme_data_files(),
+    ] + lab_readme_data_files() + day2_lib_data_files(),
     # `scripts=` installs files into install/<pkg>/lib/<pkg>/ as executables —
     # which is exactly where `ros2 run <pkg> <name>` looks. Tab-completion picks
     # them up automatically.

@@ -45,8 +45,13 @@ import subprocess
 import sys
 from pathlib import Path
 
-DAY2 = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(DAY2 / 'task_packs' / 'common'))
+try:
+    import _d2paths                    # installed next to the ros2-run scripts
+except ImportError:                    # running straight from the source tree
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    import _d2paths
+_d2paths.bootstrap(lerobot=False)
+DAY2 = _d2paths.DAY2
 from task_pack import load_task   # noqa: E402
 
 
@@ -98,7 +103,7 @@ def main():
     ap.add_argument('--steps', type=int, default=6000, help='3000 quick … 20000 full (MEASURE first)')
     ap.add_argument('--batch', type=int, default=64)
     ap.add_argument('--out-root', default=str(Path.home() / 'raise_checkpoints'))
-    ap.add_argument('--data-root', default=str(DAY2.parents[3] / 'datasets'),
+    ap.add_argument('--data-root', default=str(_d2paths.DATASETS_DIR),
                     help='where the dataset lives — inside the repo (RAISE2026/datasets), must match where it was recorded')
     g = ap.add_mutually_exclusive_group()
     g.add_argument('--dry-run', action='store_true', help='print the command and exit (default)')
