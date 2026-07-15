@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<!-- Author: Prof. Anis Koubaa <anis.koubaa@gmail.com> -->
+<!-- RAISE 2026 - Day 2 Hands-On, BEGINNER EDITION: the same lab as
+     lab2_handson.html, but every step spelled out for first-timers. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAISE 2026 - Day 2 for Beginners</title>
+<style>
+  :root{
+    --green:#134E3F; --green2:#1E6F5C; --amber:#D97706; --amber-d:#B45309;
+    --ink:#1c2b26; --muted:#5c6b66; --line:#e3e9e6; --bg:#f6f8f7; --card:#ffffff;
+    --term-bg:#12241d; --term-ink:#e8f3ee; --ok:#2f855a; --warn:#b45309;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:var(--ink);background:var(--bg);line-height:1.6;font-size:1.02rem}
+  a{color:var(--green2)}
+  header{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;padding:28px 20px 24px;}
+  header .wrap{max-width:800px;margin:0 auto}
+  header h1{margin:0 0 6px;font-size:1.65rem}
+  header p{margin:0;opacity:.92;font-size:1.05rem}
+  main{max-width:800px;margin:0 auto;padding:22px 20px 60px}
+  .lead{background:#fff8ec;border:1px solid #f2dcb3;border-left:5px solid var(--amber);
+        border-radius:10px;padding:16px 18px;margin:18px 0;font-size:1.04rem}
+  .lead b{color:var(--amber-d)}
+  h2{color:var(--green);border-bottom:2px solid var(--line);padding-bottom:6px;margin-top:40px;font-size:1.4rem}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:18px 0;
+        box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .step h3{color:var(--green2);margin:0 0 8px;font-size:1.15rem}
+  .step .num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;
+        background:var(--green);color:#fff;font-weight:700;font-size:.95rem;margin-right:10px;vertical-align:middle}
+  .step.hero{border:2px solid var(--amber);background:#fffdf8}
+  .step.hero .num{background:var(--amber)}
+  .step p{margin:9px 0}
+  .muted{color:var(--muted);font-size:.95rem}
+  .cmd{position:relative;background:var(--term-bg);color:var(--term-ink);border-radius:9px;
+       padding:13px 92px 13px 15px;margin:10px 0;font-family:"SF Mono",Menlo,Consolas,monospace;
+       font-size:.95rem;overflow-x:auto;white-space:pre}
+  .cmd .prompt{color:#7fd1ad;user-select:none}
+  .cmd .note{color:#8fb3a6;font-style:italic}
+  .cmd button{position:absolute;top:8px;right:8px;background:var(--amber);color:#fff;border:0;border-radius:6px;
+       padding:6px 13px;font-size:.84rem;font-weight:600;cursor:pointer;font-family:inherit}
+  .cmd button:hover{background:var(--amber-d)}
+  .cmd button.done{background:var(--ok)}
+  pre.out{background:var(--term-bg);color:#b9c7c0;border-radius:9px;padding:12px 15px;margin:10px 0;
+       font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.86rem;overflow-x:auto;line-height:1.5}
+  .check{background:#eefaf2;border:1px solid #bfe5cd;border-left:4px solid var(--ok);border-radius:0 8px 8px 0;
+       padding:10px 14px;margin:10px 0;font-size:.97rem}
+  .check b{color:var(--ok)}
+  .why{background:#f2f6fb;border:1px solid #d3e0ee;border-left:4px solid #4a7fb5;border-radius:0 8px 8px 0;
+       padding:10px 14px;margin:10px 0;font-size:.95rem}
+  .why b{color:#3c689a}
+  .warn{background:#fdf1e6;border:1px solid #f0d3ad;border-radius:8px;padding:11px 14px;margin:12px 0;font-size:.95rem}
+  kbd{background:#eef2f0;border:1px solid #cdd8d3;border-bottom-width:2px;border-radius:5px;padding:1px 7px;
+      font-family:monospace;font-size:.88em}
+  code.inl{background:#eef2f0;border-radius:4px;padding:1px 6px;font-family:monospace;font-size:.9em;color:var(--green)}
+  table{border-collapse:collapse;width:100%;margin:10px 0;font-size:.95rem}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--green);color:#fff}
+  tr:nth-child(even) td{background:#f7faf9}
+  footer{max-width:800px;margin:0 auto;padding:20px;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line)}
+  @media (max-width:560px){ .cmd{padding-right:15px;padding-top:42px} .cmd button{top:6px;right:6px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>🍅 Day 2 for Beginners — Talk to a Robot, Watch It Obey</h1>
+    <p>Never used ROS or a terminal much? This page is for you. Six steps, copy-paste each one, and by the end a robot picks a tomato because you <i>told it to</i>.</p>
+  </div>
+</header>
+
+<main>
+  <div class="lead">
+    <b>What you will actually do today:</b> you will type the sentence
+    <b>"pick the red tomato"</b>, and a robot arm in a simulated greenhouse will
+    look through its camera, find the red tomato (ignoring a green one!), reach
+    out, and grab it. No joystick. No motion programming. The robot learned this
+    skill from example demonstrations — that's what a <b>VLA
+    (Vision-Language-Action) model</b> is.
+  </div>
+
+  <h2>Words you'll meet (30 seconds, worth it)</h2>
+  <table>
+    <tr><th>Word</th><th>What it means here</th></tr>
+    <tr><td><b>Terminal</b></td><td>The black window where you type commands. Open one with <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>T</kbd>. Today you'll keep <b>3 terminals</b> open — think of them as 3 workers each doing one job.</td></tr>
+    <tr><td><b>Simulator</b></td><td>A 3D physics world (Gazebo) with our greenhouse and the robot inside. Nothing real can break — experiment freely.</td></tr>
+    <tr><td><b>Alias</b></td><td>A short nickname for a long command. <code class="inl">sim_d2</code> is easier to type than the full launch command it hides. (Curious what's behind each one? The <a href="lab2_handson.html">full version</a> of this page has the complete table.)</td></tr>
+    <tr><td><b>The model / "the brain"</b></td><td>A neural network (SmolVLA, 450 million parameters) that takes <i>a camera image + your sentence + the arm's position</i> and answers <i>"here's how to move next"</i>, 10 times per second.</td></tr>
+    <tr><td><b>Checkpoint</b></td><td>The brain saved as files on disk (~900 MB). Loading a checkpoint = giving the robot that brain.</td></tr>
+  </table>
+
+  <h2>The 6 steps</h2>
+
+  <div class="step">
+    <h3><span class="num">1</span>Open the greenhouse world</h3>
+    <p>Open a terminal (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>T</kbd>) and type:</p>
+    <div class="cmd"><span class="prompt">$ </span>sim_d2<button>Copy</button></div>
+    <div class="why"><b>Why this and not plain <code class="inl">raise-sim</code>?</b> <code class="inl">sim_d2</code> parks the robot
+      directly in front of a tomato plant — the exact spot the brain was trained at. A robot parked elsewhere sees
+      unfamiliar views and gets confused, just like you would in a room you've never seen.</div>
+    <div class="check"><b>✅ You know it worked when:</b> a Gazebo window opens showing a greenhouse, with the robot
+      (an orange arm on a yellow-black cart) facing a tomato plant. <b>Leave this terminal alone from now on</b> — closing it closes the world.</div>
+    <p class="muted">First start can take ~30 s. If the window never appears, run <code class="inl">raise-stop</code>, then try <code class="inl">sim_d2</code> again.</p>
+  </div>
+
+  <div class="step">
+    <h3><span class="num">2</span>Turn on the "grasping" service</h3>
+    <p>Open a <b>second</b> terminal (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>T</kbd> again) and type:</p>
+    <div class="cmd"><span class="prompt">$ </span>grasp_d3<button>Copy</button></div>
+    <div class="why"><b>Why?</b> Our simulator doesn't simulate finger-on-fruit friction (that's genuinely hard).
+      Instead, this little program watches the gripper: when it closes near a tomato, it attaches the tomato to the
+      hand. It also tells us the ground truth — <i>which</i> tomato is really being held. Without it, nothing can be picked.</div>
+    <div class="check"><b>✅ You know it worked when:</b> it prints <code class="inl">grasp server ready</code>-style startup lines and then just sits there. That's normal — it's waiting. <b>Leave this terminal alone too.</b></div>
+  </div>
+
+  <div class="step">
+    <h3><span class="num">3</span>Give the robot its brain</h3>
+    <p>Open a <b>third</b> terminal. This one is yours — all remaining commands go here. Type:</p>
+    <div class="cmd"><span class="prompt">$ </span>get_brain_d4<button>Copy</button></div>
+    <div class="why"><b>What is this downloading?</b> The trained SmolVLA checkpoint (~700 MB compressed) — the result of
+      2 hours of GPU training on 49 example demonstrations. It lands in
+      <code class="inl">~/raise_checkpoints/</code>, where every Day-2 tool finds it automatically.</div>
+    <div class="check"><b>✅ You know it worked when:</b> it ends with
+      <code class="inl">✓ reference brain installed — run: vla_d4 --task C --spawn</code>.
+      If the download gets interrupted: just run <code class="inl">get_brain_d4</code> again — it resumes where it stopped.</div>
+    <p class="muted">In a hurry? You may even skip this step — the first run then downloads the same brain from
+      Hugging Face automatically. <code class="inl">get_brain_d4</code> is simply faster at the school.</p>
+  </div>
+
+  <div class="step">
+    <h3><span class="num">4</span>Watch the brain think — one single thought</h3>
+    <p>Before letting it run, let's peek inside. Still in terminal 3:</p>
+    <div class="cmd"><span class="prompt">$ </span>vla_one_d4 --spawn<button>Copy</button></div>
+    <p>This places a red and a green tomato in front of the robot, asks the brain <b>once</b> "what should I do?",
+       and shows you everything that went in and came out:</p>
+    <pre class="out">INPUT 1 — image  : 224×224 RGB from /wrist_camera/image_raw (what the robot SEES)
+INPUT 2 — words  : "pick the red tomato"  (what we WANT)
+INPUT 3 — state  : 7 floats from /joint_states (where it IS)
+
+OUTPUT  — action : 7 floats = 6 joint targets + gripper (what to DO next)
+
+  joint            state (in)  action (out)   move?
+  ------------------------------------------------
+  shoulder_pan         +0.000        +0.021   ↑ up
+  shoulder_lift        -1.571        -1.238   ↑ up
+  ...</pre>
+    <div class="why"><b>This is the whole secret.</b> A VLA is just a function:
+      <code class="inl">action = model(image, words, position)</code>. Three inputs, seven numbers out.
+      The "robot intelligence" you're about to watch is this exact call repeated 10 times per second — nothing more.</div>
+    <div class="check"><b>✅ You know it worked when:</b> you see the INPUT/OUTPUT table above, and a picture is saved to
+      <code class="inl">~/vla_one_step.png</code> — open it (double-click in the file manager): the robot's camera view next to the numbers.</div>
+    <p class="muted">First run loads the brain into the GPU (~20 s of "Loading…" lines). That's normal.</p>
+  </div>
+
+  <div class="step hero">
+    <h3><span class="num">5</span>The magic moment — say it, watch it happen</h3>
+    <div class="cmd"><span class="prompt">$ </span>vla_d4 --task C --spawn --instruction "pick the red tomato"<button>Copy</button></div>
+    <p><b>Now look at the Gazebo window</b> (not the terminal!). The arm rises, looks above one tomato with its wrist
+       camera, decides, descends, closes its gripper on the <b>red</b> one, and lifts it. ~10–15 seconds.</p>
+    <pre class="out">── result ──────────────────────────────
+  outcome     : SUCCESS  (red tomato grasped)
+  steps       : 41
+  latency     : mean 7.8 ms, max 149.6 ms
+  ≤500 ms/action: OK ✓</pre>
+    <div class="check"><b>✅ SUCCESS means:</b> the grasp service (terminal 2) confirmed the <i>red</i> tomato — the correct
+      one — is attached to the hand. Not "it looked right": measured ground truth.</div>
+    <p><b>Now play. Each of these is one command in terminal 3:</b></p>
+    <div class="cmd"><span class="prompt">$ </span>vla_d4 --task C --spawn --red-side right --instruction "pick the red tomato"   <span class="note"># tomatoes swap sides — watch it SCAN: look left, see green, pan right, pick</span><button>Copy</button></div>
+    <div class="why"><b>What you just saw is called active perception:</b> the robot moved its camera to gather
+      information before acting. Nobody programmed that scan — it emerged from learning demonstrations that contained it.</div>
+  </div>
+
+  <div class="step">
+    <h3><span class="num">6</span>(Optional but fun) See why training matters</h3>
+    <p>Run the SAME robot with the <i>untrained</i> brain — the base model that never saw a single tomato demonstration:</p>
+    <div class="cmd"><span class="prompt">$ </span>VLA_LOCAL_CKPT=lerobot/smolvla_base vla_d4 --task C --spawn<button>Copy</button></div>
+    <div class="check"><b>✅ What you should see:</b> the arm wanders aimlessly and the run ends with
+      <code class="inl">TIMEOUT</code>. Same architecture, same camera, same greenhouse — the only difference between
+      flailing and 100/100 is the <b>2 hours of fine-tuning on 49 demonstrations</b>. That contrast is the core lesson of Day 2.</div>
+  </div>
+
+  <h2>If something goes wrong</h2>
+  <table>
+    <tr><th>You see…</th><th>Do this</th></tr>
+    <tr><td><code class="inl">command not found</code></td><td>This terminal doesn't know the nicknames yet. Run <code class="inl">source ~/raise2026-student/sim/raise_aliases.sh</code> (adjust the path to where you cloned the repo), then retry.</td></tr>
+    <tr><td><code class="inl">cannot reach the simulator (gz)</code></td><td>The world isn't running — do step 1 (<code class="inl">sim_d2</code>), wait for the Gazebo window, retry.</td></tr>
+    <tr><td>The pick "succeeds" but no tomato moves / outcome never comes</td><td>Terminal 2 (<code class="inl">grasp_d3</code>) isn't running. Start it and re-run the command.</td></tr>
+    <tr><td>The arm flails randomly</td><td>You're on the untrained brain. Run <code class="inl">unset VLA_LOCAL_CKPT</code>, then retry — the trained one is picked automatically.</td></tr>
+    <tr><td>Everything is stuck / weird</td><td>Reset the world: <code class="inl">raise-stop</code>, then start again at step 1. It takes one minute.</td></tr>
+  </table>
+
+  <h2>Where to go next</h2>
+  <p>Done early? Two directions:</p>
+  <ul>
+    <li><b>Build the dataset yourself</b> and even <b>train your own brain</b> — the
+        <a href="lab2_handson.html">full Day-2 hands-on</a> covers recording demonstrations (Lab 2.1),
+        what's inside the dataset, training, and the graded evaluation.</li>
+    <li><b>Look under the hood</b> — the full page also lists the real command behind every nickname and where the
+        model, dataset, and code live on disk. Everything you used today is a short, commented Python file you can read.</li>
+  </ul>
+</main>
+
+<footer>
+  RAISE 2026 Summer School — Day 2 Hands-On (Beginner Edition) · Prof. Anis Koubaa ·
+  Prefer more detail? <a href="lab2_handson.html">Full version</a>
+</footer>
+
+<script>
+  document.querySelectorAll('.cmd button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var block = btn.closest('.cmd').cloneNode(true);
+      block.querySelectorAll('.prompt,.note,button').forEach(function(n){ n.remove(); });
+      var text = block.textContent.replace(/[ \t]+\n/g,'\n').trim();
+      navigator.clipboard.writeText(text).then(function(){
+        var old = btn.textContent; btn.textContent = 'Copied!'; btn.classList.add('done');
+        setTimeout(function(){ btn.textContent = old; btn.classList.remove('done'); }, 1200);
+      });
+    });
+  });
+</script>
+</body>
+</html>
