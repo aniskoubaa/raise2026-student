@@ -128,6 +128,19 @@ class GraspServer(Node):
         for name in self.fruit_pos:
             if name != self.attached and name in poses:
                 self.fruit_pos[name] = poses[name][0]
+        # If the fruit we are holding was REMOVED from the world (scene
+        # cleanup, sim restart), let go — otherwise the follow tick spams the
+        # sim with pose updates for a non-existent entity forever. (The
+        # set_pose service happily ACCEPTS requests for missing entities, so
+        # this world-truth check is the only reliable signal.)
+        if self.attached is not None and self.attached not in poses:
+            self.get_logger().warn(
+                f'"{self.attached}" vanished from the world — dropping it')
+            self.fruit_pos.pop(self.attached, None)
+            self.attached = None
+        # Drop registrations for fruits that no longer exist at all.
+        for name in [n for n in self.fruit_pos if n not in poses]:
+            self.fruit_pos.pop(name, None)
 
     # ── Geometry ─────────────────────────────────────────────────────────────
     def _tool_point(self):
@@ -167,6 +180,18 @@ class GraspServer(Node):
             if tip is not None:
                 if gz_utils.set_model_pose(self.attached, *tip, world=self.world):
                     self.fruit_pos[self.attached] = tip
+                    self._follow_misses = 0
+                else:
+                    # The fruit no longer exists (scene cleaned up, sim
+                    # restarted, …). Let go instead of spamming the sim with
+                    # "Unable to update the pose" errors forever.
+                    self._follow_misses = getattr(self, '_follow_misses', 0) + 1
+                    if self._follow_misses >= 10:
+                        self.get_logger().warn(
+                            f'"{self.attached}" vanished from the world — dropping it')
+                        self.fruit_pos.pop(self.attached, None)
+                        self.attached = None
+                        self._follow_misses = 0
 
         self.state_pub.publish(String(data=self.attached or 'none'))
 
