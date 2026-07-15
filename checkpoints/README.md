@@ -46,6 +46,23 @@ then run the `tar -xzf ~/Downloads/...` line with the same `-C` target.)
 
 The executor auto-detects the resulting path.
 
+## Option 1-b — Hugging Face (same model, also public & keyless)
+
+The checkpoint is also published at
+<https://huggingface.co/scalexi/smolvla-raise2026-ripeness-ref> — browse the
+weights, read the model card, or load it directly by repo id (downloads the
+files into the HF cache on first use):
+
+```bash
+export VLA_LOCAL_CKPT=scalexi/smolvla-raise2026-ripeness-ref
+vla_d4 --task C --spawn
+```
+
+```python
+from lerobot.policies.smolvla.modeling_smolvla import SmolVLAPolicy
+policy = SmolVLAPolicy.from_pretrained("scalexi/smolvla-raise2026-ripeness-ref")
+```
+
 ## Option 2 — reproduce it (~2.5 h, one command)
 
 The training dataset is in the repo, so anyone can retrain the same thing:

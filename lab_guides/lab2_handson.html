@@ -222,6 +222,10 @@
 <span class="prompt">$ </span>tar -xzf /tmp/smolvla_C_ref_v3.tar.gz \
       -C ~/raise_checkpoints/smolvla_C_ref/checkpoints/006000<button>Copy</button></div>
       <p class="muted">Got the file from the instructors' USB instead? Skip the <code class="inl">curl</code> and point <code class="inl">tar -xzf</code> at wherever you copied it.</p>
+      <p class="muted">The same model is also on Hugging Face (public, keyless):
+         <a href="https://huggingface.co/scalexi/smolvla-raise2026-ripeness-ref">scalexi/smolvla-raise2026-ripeness-ref</a> —
+         browse the weights and the model card, or run it directly with
+         <code class="inl">export VLA_LOCAL_CKPT=scalexi/smolvla-raise2026-ripeness-ref</code>.</p>
     </details>
     <div class="warn"><b>Skip this and the arm will flail:</b> without the checkpoint the executor falls back to the
       <i>un-finetuned</i> base model (it prints <code class="inl">NOT fine-tuned — will flail</code>). Watching it flail for
