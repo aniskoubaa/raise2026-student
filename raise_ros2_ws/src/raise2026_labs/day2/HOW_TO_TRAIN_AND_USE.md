@@ -52,8 +52,10 @@ Check it worked:
 ## ② Start the simulator + grasp server
 
 ```bash
-# terminal 1 — Gazebo (add headless:=true on a server / for speed)
-raise-sim
+# terminal 1 — Gazebo, PARKED AT THE PLANT ROW (Day-2 poses + the trained
+# model expect this spot; plain raise-sim spawns in the empty aisle and the
+# scripts will warn you). add headless:=true on a server / for speed.
+sim_d2            # = raise-sim x:=-2.0 y:=2.15 yaw:=1.5708
 # terminal 2 — the grasp server: it IS the sim's grasping. Keep it running for
 # BOTH collection and execution.
 grasp_d3          # = ros2 run raise2026_tools grasp_server
@@ -151,7 +153,7 @@ The reference model scores **100/100** (8/8 picks in greenhouse scenes, 0 wrong 
 ~/raise_venvs/lerobot/bin/python3 -m pip install --timeout 30 --retries 10 "lerobot[smolvla]"
 
 # every session
-raise-sim                                                    # T1: sim
+sim_d2                                                       # T1: sim at the plant row
 grasp_d3                                                     # T2: grasp server
 05_d3 --episodes 50 --team t --hf-user me                    # T3: collect (25 min)
 06_d3 --task C --team t --hf-user me --episode 0 --spawn     # verify by replay

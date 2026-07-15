@@ -103,7 +103,7 @@ numbers:
   *not* something 20 students each sit and watch inside a 90-minute block.
 
 > ✅ **MEASURED (RTX 4090 laptop 16 GB):** ~1.1 s/step, 10.8 GB VRAM @ batch 64.
-> Reference recipe: **50 scan episodes + 6000 steps ≈ 2 h** → **100/100** on
+> Reference recipe: **≈50 scan episodes + 6000 steps ≈ 2 h** → **100/100** on
 > the Lab-2.2 evaluator in real greenhouse scenes (8/8 correct-color picks
 > L+R, 0 wrong grabs, max 201 ms/action). Journey worth teaching: bare-ground
 > 3k/30eps hit 100 trivially; adding greenhouse context dropped to 40 — the

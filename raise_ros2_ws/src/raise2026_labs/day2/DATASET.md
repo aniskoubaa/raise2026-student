@@ -20,9 +20,9 @@
 | Name (repo id) | `raiseschool/raise_ripeness_sort_ref` |
 | Location | `RAISE2026/datasets/raiseschool__raise_ripeness_sort_ref` (inside the repo — versioned with the code) |
 | Task / instruction | **"pick the red tomato"** (red vs green distractor) |
-| Episodes | 50 (red LEFT in even episodes, RIGHT in odd — 25/25; scan-then-pick choreography) |
+| Episodes | 49 kept of 50 attempts (red LEFT in even episodes, RIGHT in odd — 25/24; scan-then-pick; 1 attempt failed the record-time grasp check and was auto-discarded) |
 | Frames per episode | 76 (red-left) / 97 (red-right — includes the scan leg) @ 10 Hz |
-| Total frames | 4325 |
+| Total frames | 4228 |
 | Format | LeRobot **v3.0** dataset (parquet + video/images + metadata) |
 | Robot | UR5e + Robotiq 2F-85 on a Husky base (stationary), Gazebo Harmonic |
 

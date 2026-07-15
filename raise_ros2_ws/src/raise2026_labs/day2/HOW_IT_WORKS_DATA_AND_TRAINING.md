@@ -21,7 +21,7 @@
  ────────────────────────────────────          ─────────────────────────────────
  sim + grasp_server + auto-demonstrator        lerobot-train (SmolVLA, 450M)
                                         
- 50 × [spawn 🍅🍅 → SCAN → pick red]      ──►   4325 frames of (image, words,
+ 49 × [spawn 🍅🍅 → SCAN → pick red]      ──►   4228 frames of (image, words,
  recorded at 10 Hz through the wrist            state → action) → the model
  camera into LeRobot format                     learns to copy the mapping
                                         
@@ -44,7 +44,7 @@ robot arm, one example (one **frame**) is:
 | what to do | the **next commanded** joint targets (7 values) | the `/…/cmd` topics |
 
 We capture this tuple **10 times per second** while a pick is being performed.
-One scan-and-pick = 76–97 frames. Fifty of them = **4325 training examples**.
+One scan-and-pick = 76–97 frames. Forty-nine of them = **4228 training examples**.
 
 ## 1.2 Who performs the demonstrations? A script — and that's fine
 
@@ -101,8 +101,8 @@ picks the red one — after LOOKING. Consequence for the learner:
   a complete pick — grasp within ~3–5 cm of the tool, carry, release. If replay
   looks good, the data *provably* contains the skill.
 
-**Measured output:** 50 episodes → 4325 frames → 621 MB of raw pixels →
-**38.3 MB** on disk (parquet, ≈16× compression) → committed inside the repo at
+**Measured output:** 49 episodes → 4228 frames → 607 MB of raw pixels →
+**35.2 MB** on disk (parquet, ≈17× compression) → committed inside the repo at
 `RAISE2026/datasets/raiseschool__raise_ripeness_sort_ref/`.
 
 ---
@@ -142,7 +142,7 @@ num_learnable_params = 100M    ← what we actually train (~22%)
 
 The pretrained vision-language understanding is largely kept (it already knows
 what "red" looks like); training mostly teaches the **action expert** how *our*
-UR5e moves. That's why 50 episodes can be enough.
+UR5e moves. That's why ~50 episodes can be enough.
 
 ## 2.3 The actual command (what `finetune_d4` runs)
 
@@ -174,7 +174,7 @@ launcher so students never see the errors):
 3. Forward pass → the model predicts an action chunk per frame.
 4. Loss = distance from the demonstrated actions; backprop; optimizer update.
 
-With 4325 frames and batch 64, one **epoch** ≈ 68 steps — so 6000 steps means
+With 4228 frames and batch 64, one **epoch** ≈ 66 steps — so 6000 steps means
 the model sees every frame ~**89 times**. Small dataset, many passes: normal
 for behavioral cloning.
 
@@ -184,7 +184,7 @@ for behavioral cloning.
 |---|---|
 | VRAM during training | **10.8 / 16 GB** (batch 64 fits) |
 | Speed | ≈ **1.1 s/step** (sim sharing the GPU) |
-| Reference recipe | 50 scan episodes, **6000 steps ≈ 2 h** wall-clock |
+| Reference recipe | 49 scan episodes, **6000 steps ≈ 2 h** wall-clock |
 | Result | **100/100** — 8/8 correct picks in greenhouse scenes, 0 wrong grabs, ≤201 ms/action |
 | Output | `~/raise_checkpoints/smolvla_C_ref` (+ `…train.log` beside it) |
 

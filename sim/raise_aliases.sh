@@ -141,6 +141,11 @@ _raise_agent_d2() {
 }
 alias agent_d2=_raise_agent_d2
 
+# ── Day-2 sim launch: parked at the plant row ────────────────────────────────
+# The Day-2 grasp poses AND the trained reference model expect the robot parked
+# facing the plant at (-2, 3) — see task_packs/common/sim_poses.py (PARK).
+alias sim_d2='raise-sim x:=-2.0 y:=2.15 yaw:=1.5708'
+
 # ── D2L1 — teleoperation & data collection ──────────────────────────────────
 # LeRobot-dependent scripts (03/05/06, finetune, vla) run under the venv python.
 alias 01_d3="ros2 run raise2026_labs 01_teleop.py"
@@ -153,4 +158,5 @@ alias grasp_d3="ros2 run raise2026_tools grasp_server"
 
 # ── D2L2 — fine-tune (background bridge) + VLA executor ─────────────────────
 alias finetune_d4='"$RAISE_LEROBOT_PY" "$RAISE_D2/day2_02_vla_executor/starter/finetune_smolvla.py"'
+alias vla_one_d4='"$RAISE_LEROBOT_PY" "$RAISE_D2/day2_02_vla_executor/starter/vla_one_step.py"'
 alias vla_d4='"$RAISE_LEROBOT_PY" "$RAISE_D2/day2_02_vla_executor/starter/vla_executor.py"'

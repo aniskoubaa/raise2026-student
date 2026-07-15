@@ -2,7 +2,7 @@
 
 # 🍅 `raise_ripeness_sort_ref` — the Day-2 reference dataset (with pictures!)
 
-> **The robot demonstrated *"pick the red tomato"* to itself 50 times — parked
+> **The robot demonstrated *"pick the red tomato"* to itself 49 times — parked
 > at a tomato plant row, using a SCAN strategy: look above the left spot; if
 > the tomato there is red, descend; if it's green, pan right and pick there.**
 > Every frame shows greenhouse context AND is decidable from the image alone
@@ -54,21 +54,21 @@ grasp trigger uses the command, not the measurement).
 | | |
 |---|---|
 | Instruction | **"pick the red tomato"** |
-| Episodes | **50** — 25 red-left + 25 red-right, all grasp-verified, zero discards |
-| Frames | **4325** @ 10 Hz — red-left episodes are 76 frames, red-right 97 (the extra scan leg) |
+| Episodes | **49** — 25 red-left + 24 red-right, every kept episode **grasp-verified** (1 of 50 attempts failed the check and was auto-discarded) |
+| Frames | **4228** @ 10 Hz — red-left episodes are 76 frames, red-right 97 (the extra scan leg) |
 | Camera | `observation.images.wrist` — 224×224×3 RGB |
 | State / action | 7 floats — 6 UR5e joints + gripper |
 | Quality | every episode's grasp **verified at record time**; 0 NaNs |
 | Scene | robot parked facing the plant at (-2, 3) — **plants visible in every frame** |
-| Size | ~39 MB (greenhouse visuals compress less than bare ground) |
+| Size | ~36 MB (greenhouse visuals compress less than bare ground) |
 
 ## How much data was generated
 
 **Raw sensor volume** (what the recorder actually captured):
 
-| Stream | Per frame | × 4325 frames | Share |
+| Stream | Per frame | × 4228 frames | Share |
 |---|---|---|---|
-| Wrist camera (224×224×3 uint8) | 147.0 KB | **621.0 MB** raw pixels | 99.98 % |
+| Wrist camera (224×224×3 uint8) | 147.0 KB | **607.0 MB** raw pixels | 99.98 % |
 | State (7 × float32) | 28 B | 0.06 MB | 0.02 % |
 | Action (7 × float32) | 28 B | 0.06 MB | 0.02 % |
 
@@ -76,19 +76,19 @@ grasp trigger uses the command, not the measurement).
 
 | File | Size |
 |---|---|
-| `data/chunk-000/file-000.parquet` (all 4325 frames) | **38.3 MB** |
+| `data/chunk-000/file-000.parquet` (all 4228 frames) | **35.2 MB** |
 | `meta/` (episodes, stats, tasks, info) | 0.12 MB |
 | `preview/` (human-viewable extracts, not training data) | 0.86 MB |
-| **Total folder** | **≈ 39 MB** |
+| **Total folder** | **≈ 36 MB** |
 
-That's a **≈ 16× compression** of the raw pixel stream — ~0.8 MB per episode.
+That's a **≈ 17× compression** of the raw pixel stream — ~0.7 MB per episode.
 (Bare ground compressed ≈20×, foliage-heavy frames less. A nice lesson:
 **richer context costs bytes**.)
 
-**Generation rate** (headless sim, hands-free): 50 kept episodes in ~28 minutes
+**Generation rate** (headless sim, hands-free): 49 kept episodes in ~26 minutes
 ≈ **2 episodes/minute** — each episode is 7 s of recording plus ~23 s of
 scene setup (spawn → home → pick → verify → cleanup). Scaling up is linear:
-a 100-episode dataset would take ~50 minutes and ~50 MB on disk.
+a 100-episode dataset would take ~55 minutes and ~72 MB on disk.
 
 ## Folder map
 
@@ -96,7 +96,7 @@ a 100-episode dataset would take ~50 minutes and ~50 MB on disk.
 ├── README.md                  ← you are here
 ├── preview/                   ← extracted sample images / GIFs / plots (for humans)
 ├── data/chunk-000/
-│   └── file-000.parquet       ← THE data: 2100 rows of (image, state, action, task)
+│   └── file-000.parquet       ← THE data: 4228 rows of (image, state, action, task)
 └── meta/
     ├── info.json              ← schema: features, shapes, fps, episode count
     ├── stats.json             ← per-feature min/max/mean/std (used for normalization)

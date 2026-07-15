@@ -13,8 +13,9 @@ WHY   This is the "EXECUTE" half of Day 2, and the pay-off for Lab 2.1: the
       Same loop shape as Day-1's agent.py (loop until success or limit) — but
       the "tool" is a single VLA call returning low-level joint actions.
 
-      Reference result (greenhouse scenes, measured 2026-07-06): 8/8
-      correct-color picks both sides, 0 wrong grabs, max 201 ms → 100/100.
+      Reference result (greenhouse scenes, measured 2026-07-15 on a fresh
+      session): 8/8 correct-color picks both sides, 0 wrong grabs,
+      max 167 ms → 100/100.
 
 LEARN - make_vla_client() returns a BACKEND-BLIND client. Default is in-process
         SmolVLA; set VLA_BACKEND=remote-openvla + VLA_REMOTE_URL to A/B against
@@ -65,7 +66,7 @@ from vla_client import make_vla_client, ExecutionResult                    # noq
 from vla_client.base import UR5E_JOINTS, GRIPPER_KNUCKLE, GRIPPER_MIMIC_SIGNS, GRIPPER_OPEN   # noqa: E402
 from vla_client.ros_image import imgmsg_to_rgb, resize_rgb                 # noqa: E402
 from task_pack import load_task                                            # noqa: E402
-from sim_poses import POSE_HOME, GRASP_LEFT, GRASP_RIGHT                   # noqa: E402
+from sim_poses import POSE_HOME, GRASP_LEFT, GRASP_RIGHT, check_parking, snap_to_park   # noqa: E402
 from raise2026_tools import gz_utils                                       # noqa: E402
 
 IMAGE_TOPIC = '/wrist_camera/image_raw'
@@ -77,15 +78,11 @@ RED, GREEN = 'tomato_red_0', 'tomato_green_0'
 
 # The instructor reference checkpoint, when it exists on this machine —
 # pick the LATEST training step under checkpoints/ (e.g. 003000, 006000).
-def _find_reference_ckpt():
-    root = Path.home() / 'raise_checkpoints' / 'smolvla_C_ref' / 'checkpoints'
-    if root.is_dir():
-        steps = sorted(d for d in root.iterdir() if (d / 'pretrained_model').is_dir())
-        if steps:
-            return steps[-1] / 'pretrained_model'
-    return None
+# Reference-checkpoint discovery lives in the factory so vla_one_step.py and
+# the evaluator behave identically when VLA_LOCAL_CKPT is unset.
+from vla_client.factory import find_reference_ckpt                        # noqa: E402
 
-REFERENCE_CKPT = _find_reference_ckpt()
+REFERENCE_CKPT = find_reference_ckpt()
 
 
 # ── .env loader (same helper as Day-1 agent.py) ────────────────────────────
@@ -190,6 +187,10 @@ class ArmIO(Node):
 
     def spawn_scene(self, red_left: bool):
         """Place a red + green tomato at the two trained grasp points."""
+        # The reference model was trained at the plant-row parking. Snap the
+        # base there EXACTLY (spawn settle varies by cm — enough to drift the
+        # scan views off the training distribution; found live 2026-07-15).
+        snap_to_park(gz_utils, world=self.world)
         self.goto(GRASP_LEFT, GRIPPER_OPEN)
         left = self.tool_point()
         self.goto(GRASP_RIGHT, GRIPPER_OPEN)
@@ -267,7 +268,7 @@ def main():
     ap.add_argument('--red-side', choices=['left', 'right'], default='left',
                     help='with --spawn: which side gets the red tomato')
     ap.add_argument('--hz', type=float, default=10.0, help='control rate')
-    ap.add_argument('--max-steps', type=int, default=80)
+    ap.add_argument('--max-steps', type=int, default=120)   # scan episodes run up to ~97 frames
     ap.add_argument('--world', default=gz_utils.DEFAULT_WORLD)
     ap.add_argument('--gripper-link', default='gripper_mount_link')
     args = ap.parse_args()

@@ -66,7 +66,7 @@ GRIPPER_LINK = 'gripper_mount_link'
 
 # The tuned grasp poses are SHARED with the Lab-2.2 evaluator (it must test on
 # the same reachable points the demos were recorded at) — one source of truth:
-from sim_poses import POSE_HOME, GRASP_LEFT, GRASP_RIGHT, above as _above   # noqa: E402
+from sim_poses import POSE_HOME, GRASP_LEFT, GRASP_RIGHT, above as _above, check_parking, snap_to_park   # noqa: E402
 
 
 class Demonstrator(Node):
@@ -240,6 +240,9 @@ def main():
 
     # Discover the two grasp world points via the no-IK trick: go to each grasp
     # pose, read where the tool lands. Done once (base is stationary).
+    # Deterministic geometry: snap the base to the canonical PARK pose first
+    # (spawn settle varies run-to-run — enough to drift the camera views).
+    snap_to_park(gz_utils, world=args.world)
     print('Locating reachable grasp points (no-IK trick) ...')
     # Generous settle time: the horizontal greenhouse poses swing far from
     # home, and reading the tool point BEFORE the arm has settled spawns the
@@ -257,6 +260,8 @@ def main():
         node.destroy_node(); rclpy.shutdown(); sys.exit(1)
     print(f'  left grasp point  : {tuple(round(v,3) for v in left_pt)}')
     print(f'  right grasp point : {tuple(round(v,3) for v in right_pt)}\n')
+    # The trained model + these poses expect the plant-row parking (sim_d2).
+    check_parking(lambda: gz_utils.get_model_world_pose('raise2026_robot', args.world))
 
     saved = 0
     try:

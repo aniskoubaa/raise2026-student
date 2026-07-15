@@ -13,7 +13,7 @@
 This is the payoff of Day 2. And it works: the reference model scores
 **100/100** on this lab's evaluator — **8/8 correct picks** in real greenhouse
 scenes (foliage everywhere!), red on either side, never touching the green
-tomato, max 201 ms per decision. The model even **scans**: it looks above one
+tomato, max 167 ms per decision. The model even **scans**: it looks above one
 spot, and if the tomato there is green it pans to the other side — active
 perception it learned from the demonstrations.
 
@@ -25,10 +25,25 @@ perception it learned from the demonstrations.
 | **The loop** | `vla_executor.py`: see → ask the model → act | mean ~10 ms per decision |
 | **The truth** | `grasp_server`'s `/grasp/state` says what's really held | red attach = success; green = fail |
 
+## First: look inside ONE brain call (2 minutes, do this before the full run)
+
+A VLA is just a function: `action = model(image, instruction, state)`.
+`vla_one_step.py` grabs those three inputs live from the sim, calls the model
+**once**, and prints exactly what went in and what came out (plus a PNG card
+of the camera frame next to the numbers):
+
+```bash
+vla_one_d4 --spawn                 # one call, every input/output explained
+vla_one_d4 --steps 5               # consecutive calls — see the action CHUNK stream out
+vla_one_d4 --spawn --execute       # publish the action: the arm actually moves
+```
+
+The `--execute` publish line, repeated at 10 Hz, IS the whole executor below.
+
 ## How to run (the 2-minute payoff)
 
 ```bash
-# terminal 1 — the sim            raise-sim
+# terminal 1 — the sim            sim_d2   (plant-row parking — the model expects it)
 # terminal 2 — the grasp server   grasp_d3        (must run — it IS the grasp)
 # terminal 3 — the executor (venv python; the alias handles it):
 vla_d4 --task C --spawn --instruction "pick the red tomato"

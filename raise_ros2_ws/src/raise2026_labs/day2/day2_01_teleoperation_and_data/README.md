@@ -55,8 +55,8 @@ varied* demonstrations efficiently.
 ## How to run (Path A — the recommended 20 minutes)
 
 ```bash
-# terminal 1 — the sim
-raise-sim                       # (headless works too — see VERIFY_MANIPULATION.md)
+# terminal 1 — the sim, PARKED AT THE PLANT ROW (Day-2 poses expect this spot)
+sim_d2                          # = raise-sim x:=-2.0 y:=2.15 yaw:=1.5708
 # terminal 2 — the grasp server (the sim's "grasp physics"; keep it running)
 grasp_d3
 # terminal 3 — collect 50 verified episodes, hands-free (~25 min)
