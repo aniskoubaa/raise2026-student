@@ -47,7 +47,12 @@ def _go_offline_if_possible(ckpt: str) -> None:
     piece is missing we stay online so the first download still works."""
     if os.getenv('HF_HUB_OFFLINE') is not None:
         return                                   # user already decided
-    if Path(ckpt).expanduser().is_dir() and _BACKBONE_CACHE.is_dir():
+    ckpt_local = Path(ckpt).expanduser().is_dir()
+    if not ckpt_local and '/' in ckpt:
+        # a hub repo id counts as "local" once its snapshot is in the cache
+        ckpt_local = (Path.home() / '.cache' / 'huggingface' / 'hub' /
+                      ('models--' + ckpt.replace('/', '--'))).is_dir()
+    if ckpt_local and _BACKBONE_CACHE.is_dir():
         os.environ['HF_HUB_OFFLINE'] = '1'
         os.environ['TRANSFORMERS_OFFLINE'] = '1'
 

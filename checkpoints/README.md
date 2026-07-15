@@ -17,8 +17,11 @@
 | Result | **100/100** on the Lab-2.2 evaluator (8/8 picks in greenhouse scenes, 0 wrong grabs, ≤167 ms/action — fresh-session verified 2026-07-15) |
 | Expected local path | `~/raise_checkpoints/smolvla_C_ref/checkpoints/006000/pretrained_model` |
 
-The Day-2 executor **auto-detects the newest checkpoint** under
-`~/raise_checkpoints/smolvla_C_ref/checkpoints/` when `VLA_LOCAL_CKPT` is unset.
+The Day-2 tools **auto-detect the newest checkpoint** under
+`~/raise_checkpoints/smolvla_C_ref/checkpoints/` when `VLA_LOCAL_CKPT` is unset —
+and if nothing is installed there, they **download the public Hugging Face copy
+automatically** (Option 1-b below) on first run. You can't end up on the
+un-fine-tuned base model by accident.
 
 ## Option 1 — download from the PUBLIC GitHub Release (recommended: ~2 min, no login)
 

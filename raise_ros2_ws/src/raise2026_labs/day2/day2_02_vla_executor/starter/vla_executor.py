@@ -30,9 +30,9 @@ PREREQUISITES (three things):
     1. the sim:          raise-sim   (or headless — see VERIFY_MANIPULATION.md)
     2. the grasp server: ros2 run raise2026_tools grasp_server    (grasp_d3)
     3. a checkpoint:     export VLA_LOCAL_CKPT=<...>/pretrained_model
-       (if unset, the executor auto-uses the local reference checkpoint when it
-        exists, else falls back to the un-fine-tuned lerobot/smolvla_base —
-        which will flail: a great "why fine-tune?" demo, not a graded run.)
+       (if unset: the local reference checkpoint when installed, else the
+        PUBLIC Hugging Face copy is downloaded automatically — no key needed.
+        For the flail demo, explicitly set VLA_LOCAL_CKPT=lerobot/smolvla_base.)
 
 Run WITH THE LEROBOT VENV PYTHON (the vla_d4 alias does this for you):
     vla_d4 --task C --spawn --instruction "pick the red tomato"
