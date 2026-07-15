@@ -24,9 +24,32 @@ working on a machine with no GPU/torch.
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
+
 import numpy as np
 
 from .base import Action, GRIPPER_OPEN, GRIPPER_CLOSED
+
+# The VLM backbone SmolVLA is built on. lerobot instantiates it from the HF
+# Hub even when the checkpoint is local — the hub round-trip is structural,
+# not needed once the backbone sits in the local HF cache.
+_BACKBONE_CACHE = (Path.home() / '.cache' / 'huggingface' / 'hub' /
+                   'models--HuggingFaceTB--SmolVLM2-500M-Video-Instruct')
+
+
+def _go_offline_if_possible(ckpt: str) -> None:
+    """Skip ALL HF Hub traffic when everything needed is already on disk.
+
+    With a LOCAL checkpoint and the backbone in the HF cache, model loading
+    is fully self-contained — going offline removes the network dependency
+    (lab wifi, rate limits, 'unauthenticated requests' warnings). If either
+    piece is missing we stay online so the first download still works."""
+    if os.getenv('HF_HUB_OFFLINE') is not None:
+        return                                   # user already decided
+    if Path(ckpt).expanduser().is_dir() and _BACKBONE_CACHE.is_dir():
+        os.environ['HF_HUB_OFFLINE'] = '1'
+        os.environ['TRANSFORMERS_OFFLINE'] = '1'
 
 
 class LocalSmolVLA:
@@ -36,6 +59,7 @@ class LocalSmolVLA:
                  ckpt: str = 'lerobot/smolvla_base',
                  device: str = 'cuda',
                  instruction_default: str = ''):
+        _go_offline_if_possible(ckpt)      # before transformers gets imported
         # ── Lazy, well-explained imports ────────────────────────────────────
         # Inside __init__ so a machine without torch can still import the
         # package and use the remote backend or test the Action contract.

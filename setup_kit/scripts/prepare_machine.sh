@@ -199,6 +199,23 @@ else
   (( lerobot_ok )) || echo "[prepare] ⚠ LeRobot install failed — re-run this script to retry (Day-2 needs it)." >&2
 fi
 
+# Pre-download the SmolVLA VLM backbone into the HF cache (~1 GB). With it
+# cached, the Day-2 tools run FULLY OFFLINE at the school — no HF Hub
+# traffic, no rate limits on the shared wifi.
+BACKBONE_DIR="${HOME}/.cache/huggingface/hub/models--HuggingFaceTB--SmolVLM2-500M-Video-Instruct"
+if [[ -d "${BACKBONE_DIR}" ]]; then
+  echo "[prepare] ✓ SmolVLA vision backbone already cached (Day-2 runs offline)"
+elif "${VENV}/bin/python3" -c 'import lerobot' 2>/dev/null; then
+  echo "[prepare] Pre-downloading the SmolVLA vision backbone (~1 GB, once)…"
+  "${VENV}/bin/python3" - <<'PYEOF' || echo "[prepare] ⚠ backbone pre-download failed — first Day-2 model load will fetch it instead." >&2
+from transformers import AutoProcessor, AutoModelForImageTextToText
+m = 'HuggingFaceTB/SmolVLM2-500M-Video-Instruct'
+AutoProcessor.from_pretrained(m)
+AutoModelForImageTextToText.from_pretrained(m)
+print('[prepare] ✓ backbone cached')
+PYEOF
+fi
+
 # ── 8. rosdep (ready for the fast Day-1 workspace build) ────────────────────
 [[ -f /etc/ros/rosdep/sources.list.d/20-default.list ]] || sudo rosdep init
 rosdep update

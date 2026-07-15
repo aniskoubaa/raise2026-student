@@ -191,10 +191,20 @@ class ArmIO(Node):
         # base there EXACTLY (spawn settle varies by cm — enough to drift the
         # scan views off the training distribution; found live 2026-07-15).
         snap_to_park(gz_utils, world=self.world)
-        self.goto(GRASP_LEFT, GRIPPER_OPEN)
-        left = self.tool_point()
-        self.goto(GRASP_RIGHT, GRIPPER_OPEN)
-        right = self.tool_point()
+
+        def locate(pose, tries=4):
+            # retry: right after sim start TF + gz services need a few seconds
+            for attempt in range(tries):
+                self.goto(pose, GRIPPER_OPEN,
+                          settle_s=2.5 if attempt == 0 else 1.5)
+                self.spin(0.5)
+                pt = self.tool_point()
+                if pt is not None:
+                    return pt
+            return None
+
+        left = locate(GRASP_LEFT)
+        right = locate(GRASP_RIGHT)
         self.goto(POSE_HOME, GRIPPER_OPEN)
         if left is None or right is None:
             return False

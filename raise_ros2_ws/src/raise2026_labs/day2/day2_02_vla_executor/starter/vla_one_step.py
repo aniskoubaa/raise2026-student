@@ -129,16 +129,32 @@ class OneStepIO(Node):
         return (bx + w[0], by + w[1], bz + w[2])
 
 
+def _locate(node, pose, tries=4):
+    """goto + measure, retrying — right after sim start, TF and the gz
+    services need a few seconds before the first lookup succeeds."""
+    for attempt in range(tries):
+        node.goto(pose, GRIPPER_OPEN, settle_s=2.5 if attempt == 0 else 1.5)
+        node.spin(0.5)
+        pt = node.tool_point()
+        if pt is not None:
+            return pt
+    return None
+
+
 def spawn_scene(node, red_left=True):
     """Place a red + green tomato at the two trained grasp points."""
     snap_to_park(gz_utils)                       # exact training geometry first
     print('  (setup) locating the two grasp points with the arm ...')
-    node.goto(GRASP_LEFT, GRIPPER_OPEN)
-    left_pt = node.tool_point()
-    node.goto(GRASP_RIGHT, GRIPPER_OPEN)
-    right_pt = node.tool_point()
+    left_pt = _locate(node, GRASP_LEFT)
+    right_pt = _locate(node, GRASP_RIGHT)
     if left_pt is None or right_pt is None:
-        print('✗ could not locate grasp points — is the sim fully up?')
+        # say WHICH half is broken, so the fix is obvious
+        if gz_utils.get_model_world_pose('raise2026_robot') is None:
+            print('✗ cannot reach the simulator (gz). Start it first:  sim_d2')
+        else:
+            print('✗ sim is up but no TF from the robot yet — wait a few '
+                  'seconds after sim start and re-run (ros2 topic echo /tf '
+                  'should stream).')
         sys.exit(1)
     red_pt, green_pt = (left_pt, right_pt) if red_left else (right_pt, left_pt)
     for name in ('tomato_red_0', 'tomato_green_0'):
