@@ -25,7 +25,13 @@ The Day-2 executor **auto-detects the newest checkpoint** under
 The checkpoint is a **public release asset** (687 MB tar.gz) on the student repo:
 <https://github.com/aniskoubaa/raise2026-student/releases/tag/day2-smolvla-ref-v3>
 
-One command — no token, no login:
+One command — no token, no login (the alias from `raise_aliases.sh`):
+
+```bash
+get_brain_d4
+```
+
+Or by hand (identical result):
 
 ```bash
 mkdir -p ~/raise_checkpoints/smolvla_C_ref/checkpoints/006000

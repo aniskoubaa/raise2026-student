@@ -158,5 +158,36 @@ alias grasp_d3="ros2 run raise2026_tools grasp_server"
 
 # ── D2L2 — fine-tune (background bridge) + VLA executor ─────────────────────
 alias finetune_d4='"$RAISE_LEROBOT_PY" "$RAISE_D2/day2_02_vla_executor/starter/finetune_smolvla.py"'
+# One-command install of the Day-2 reference brain (fine-tuned SmolVLA, 687 MB,
+# public release — no login). Day-2 tools auto-detect it once extracted.
+get_brain_d4() {
+  local url="https://github.com/aniskoubaa/raise2026-student/releases/download/day2-smolvla-ref-v3/smolvla_C_ref_v3.tar.gz"
+  local dst="$HOME/raise_checkpoints/smolvla_C_ref/checkpoints/006000"
+  local tmp="/tmp/smolvla_C_ref_v3.tar.gz"
+  if [ -d "$dst/pretrained_model" ]; then
+    echo "✓ reference brain already installed at $dst"; return 0
+  fi
+  echo "Downloading the reference brain (687 MB) — interruptions RESUME, just re-run if needed…"
+  # -C - resumes a partial file; --http1.1 avoids HTTP/2 stream resets seen on
+  # flaky networks; tar -tzf is the completeness check (a resumed 416 also
+  # lands here with the file already whole).
+  local attempt
+  for attempt in 1 2 3 4 5; do
+    curl -L --http1.1 -C - --retry 5 --retry-all-errors -o "$tmp" "$url" && break
+    tar -tzf "$tmp" >/dev/null 2>&1 && break
+    echo "…download interrupted (attempt $attempt/5) — resuming in 5 s"; sleep 5
+  done
+  if ! tar -tzf "$tmp" >/dev/null 2>&1; then
+    echo "✗ download incomplete — re-run get_brain_d4 (it resumes where it stopped)," 
+    echo "  or copy the file from the instructors' USB and run:"
+    echo "  mkdir -p $dst && tar -xzf <the-file> -C $dst"
+    return 1
+  fi
+  mkdir -p "$dst" &&
+  tar -xzf "$tmp" -C "$dst" &&
+  rm -f "$tmp" &&
+  echo "✓ reference brain installed — run:  vla_d4 --task C --spawn"
+}
+
 alias vla_one_d4='"$RAISE_LEROBOT_PY" "$RAISE_D2/day2_02_vla_executor/starter/vla_one_step.py"'
 alias vla_d4='"$RAISE_LEROBOT_PY" "$RAISE_D2/day2_02_vla_executor/starter/vla_executor.py"'

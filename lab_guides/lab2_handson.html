@@ -182,15 +182,18 @@
 
   <div class="step">
     <span class="num">1</span><h3>Install the brain (once) — the reference checkpoint</h3>
-    <p>The trained SmolVLA is a <b>687&nbsp;MB file</b> (<code class="inl">smolvla_C_ref_v3.tar.gz</code>) —
-       download it straight from the public release (no login), or take it from the instructors' USB stick.
-       Either way, put it where the executor auto-detects it:</p>
-    <div class="cmd"><span class="prompt">$ </span>mkdir -p ~/raise_checkpoints/smolvla_C_ref/checkpoints/006000
+    <p>The trained SmolVLA is a <b>687&nbsp;MB public download</b> (no login). One command fetches and
+       installs it where every Day-2 tool auto-detects it:</p>
+    <div class="cmd"><span class="prompt">$ </span>get_brain_d4<button>Copy</button></div>
+    <details>
+      <summary>No alias / prefer to do it by hand? (same thing, three commands)</summary>
+      <div class="cmd"><span class="prompt">$ </span>mkdir -p ~/raise_checkpoints/smolvla_C_ref/checkpoints/006000
 <span class="prompt">$ </span>curl -L -o /tmp/smolvla_C_ref_v3.tar.gz \
       https://github.com/aniskoubaa/raise2026-student/releases/download/day2-smolvla-ref-v3/smolvla_C_ref_v3.tar.gz
 <span class="prompt">$ </span>tar -xzf /tmp/smolvla_C_ref_v3.tar.gz \
       -C ~/raise_checkpoints/smolvla_C_ref/checkpoints/006000<button>Copy</button></div>
-    <p class="muted">Got the file from USB instead? Skip the <code class="inl">curl</code> and point <code class="inl">tar -xzf</code> at wherever you copied it.</p>
+      <p class="muted">Got the file from the instructors' USB instead? Skip the <code class="inl">curl</code> and point <code class="inl">tar -xzf</code> at wherever you copied it.</p>
+    </details>
     <div class="warn"><b>Skip this and the arm will flail:</b> without the checkpoint the executor falls back to the
       <i>un-finetuned</i> base model (it prints <code class="inl">NOT fine-tuned — will flail</code>). Watching it flail for
       30 seconds is actually a great "why fine-tune?" demo — but install the brain for the real run.</div>
