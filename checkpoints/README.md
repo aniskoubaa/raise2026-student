@@ -20,35 +20,25 @@
 The Day-2 executor **auto-detects the newest checkpoint** under
 `~/raise_checkpoints/smolvla_C_ref/checkpoints/` when `VLA_LOCAL_CKPT` is unset.
 
-## Option 1 — download from the GitHub Release (recommended: ~2 min)
+## Option 1 — download from the PUBLIC GitHub Release (recommended: ~2 min, no login)
 
-The checkpoint is published as a **release asset** (687 MB tar.gz):
-<https://github.com/aniskoubaa/raise_summer_school/releases/tag/day2-smolvla-ref-v3>
+The checkpoint is a **public release asset** (687 MB tar.gz) on the student repo:
+<https://github.com/aniskoubaa/raise2026-student/releases/tag/day2-smolvla-ref-v3>
 
-**In the browser** (logged in to GitHub with repo access): open the release
-page, click `smolvla_C_ref_v3.tar.gz`, then:
-
-```bash
-mkdir -p ~/raise_checkpoints/smolvla_C_ref/checkpoints/006000
-tar -xzf ~/Downloads/smolvla_C_ref_v3.tar.gz \
-    -C ~/raise_checkpoints/smolvla_C_ref/checkpoints/006000
-```
-
-**From the terminal** — while this repo is *private*, downloads need a token
-(once it's public, the plain browser URL works with `curl -L`):
+One command — no token, no login:
 
 ```bash
 mkdir -p ~/raise_checkpoints/smolvla_C_ref/checkpoints/006000
-cd ~/raise_checkpoints/smolvla_C_ref/checkpoints/006000
-ASSET=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-  https://api.github.com/repos/aniskoubaa/raise_summer_school/releases/tags/day2-smolvla-ref-v3 \
-  | python3 -c "import json,sys; print(json.load(sys.stdin)['assets'][0]['id'])")
-curl -L -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/octet-stream" \
-  -o ckpt.tar.gz "https://api.github.com/repos/aniskoubaa/raise_summer_school/releases/assets/$ASSET"
-tar -xzf ckpt.tar.gz && rm ckpt.tar.gz
+curl -L -o /tmp/smolvla_C_ref_v3.tar.gz \
+  https://github.com/aniskoubaa/raise2026-student/releases/download/day2-smolvla-ref-v3/smolvla_C_ref_v3.tar.gz
+tar -xzf /tmp/smolvla_C_ref_v3.tar.gz \
+    -C ~/raise_checkpoints/smolvla_C_ref/checkpoints/006000 && rm /tmp/smolvla_C_ref_v3.tar.gz
 ```
 
-Either way the executor auto-detects the resulting path.
+(Or in the browser: open the release page, click `smolvla_C_ref_v3.tar.gz`,
+then run the `tar -xzf ~/Downloads/...` line with the same `-C` target.)
+
+The executor auto-detects the resulting path.
 
 ## Option 2 — reproduce it (~2.5 h, one command)
 
