@@ -107,6 +107,33 @@
     Prefer the <b>aliases</b> (<code class="inl">05_d3</code>, <code class="inl">06_d3</code>, <code class="inl">vla_d4</code>, …).
     Plain <code class="inl">ros2 run raise2026_labs &lt;script&gt;</code> also works — the scripts detect and
     switch to the correct Python (the LeRobot venv) by themselves.</div>
+
+  <details>
+    <summary>No magic: what each alias REALLY runs, and where everything lives on disk</summary>
+    <p class="muted">Every alias is defined in <code class="inl">&lt;repo&gt;/sim/raise_aliases.sh</code> — open it, it's plain bash.
+       <code class="inl">$LEROBOT_PY</code> below means <code class="inl">~/raise_venvs/lerobot/bin/python3</code>: the AI scripts run under a dedicated
+       Python venv because LeRobot needs numpy ≥ 2 while ROS 2's <code class="inl">cv_bridge</code> needs numpy &lt; 2 — two environments, cleanly separated.</p>
+    <table>
+      <tr><th>Alias</th><th>What it actually runs</th><th>The file (paths inside the repo)</th></tr>
+      <tr><td><code class="inl">sim_d2</code></td><td><code class="inl">raise-sim x:=-2.0 y:=2.15 yaw:=1.5708</code> → <code class="inl">ros2 launch raise2026_bringup sim.launch.py</code> + GPU/env fixes</td><td><code class="inl">sim/raise-sim</code></td></tr>
+      <tr><td><code class="inl">grasp_d3</code></td><td><code class="inl">ros2 run raise2026_tools grasp_server</code></td><td><code class="inl">raise_ros2_ws/src/raise2026_tools/raise2026_tools/grasp_server.py</code></td></tr>
+      <tr><td><code class="inl">05_d3</code></td><td><code class="inl">$LEROBOT_PY .../05_auto_demonstrate.py</code></td><td><code class="inl">raise_ros2_ws/src/raise2026_labs/day2/day2_01_teleoperation_and_data/starter/</code></td></tr>
+      <tr><td><code class="inl">06_d3</code></td><td><code class="inl">$LEROBOT_PY .../06_replay_episode.py</code></td><td>same folder as 05</td></tr>
+      <tr><td><code class="inl">get_brain_d4</code></td><td><code class="inl">curl</code> the public release + <code class="inl">tar -xzf</code> into the checkpoint folder (resumable)</td><td>function in <code class="inl">sim/raise_aliases.sh</code></td></tr>
+      <tr><td><code class="inl">vla_one_d4</code></td><td><code class="inl">$LEROBOT_PY .../vla_one_step.py</code></td><td><code class="inl">raise_ros2_ws/src/raise2026_labs/day2/day2_02_vla_executor/starter/</code></td></tr>
+      <tr><td><code class="inl">vla_d4</code></td><td><code class="inl">$LEROBOT_PY .../vla_executor.py</code></td><td>same folder as vla_one</td></tr>
+      <tr><td><code class="inl">finetune_d4</code></td><td><code class="inl">$LEROBOT_PY .../finetune_smolvla.py</code> (prints the full <code class="inl">lerobot-train</code> command it launches)</td><td>same folder</td></tr>
+    </table>
+    <p><b>Where the AI pieces live on disk:</b></p>
+    <table>
+      <tr><th>Thing</th><th>Location</th></tr>
+      <tr><td>The fine-tuned SmolVLA (the "brain")</td><td><code class="inl">~/raise_checkpoints/smolvla_C_ref/checkpoints/006000/pretrained_model/</code> — <code class="inl">model.safetensors</code> (the 450M-parameter weights) + config + the pre/post-processor files. Every Day-2 tool auto-detects this path when <code class="inl">VLA_LOCAL_CKPT</code> is unset; export that env var to run a different checkpoint.</td></tr>
+      <tr><td>The training dataset</td><td><code class="inl">&lt;repo&gt;/datasets/raiseschool__raise_ripeness_sort_ref/</code> (LeRobot v3 parquet, versioned in git)</td></tr>
+      <tr><td>The SmolVLM2 vision backbone</td><td><code class="inl">~/.cache/huggingface/hub/models--HuggingFaceTB--SmolVLM2-500M-Video-Instruct/</code> (cached once by the setup; Day-2 then runs fully offline)</td></tr>
+      <tr><td>The LeRobot Python venv</td><td><code class="inl">~/raise_venvs/lerobot/</code></td></tr>
+      <tr><td>Your own fine-tunes land in</td><td><code class="inl">~/raise_checkpoints/smolvla_&lt;task&gt;_&lt;team&gt;/</code> (+ a <code class="inl">.train.log</code> beside it)</td></tr>
+    </table>
+  </details>
   <div class="step">
     <span class="num">1</span><h3>Launch the simulator — parked at the plant row</h3>
     <p>Day 2 uses a special parking spot: the robot faces a tomato plant, so the camera sees real
@@ -185,6 +212,8 @@
     <p>The trained SmolVLA is a <b>687&nbsp;MB public download</b> (no login). One command fetches and
        installs it where every Day-2 tool auto-detects it:</p>
     <div class="cmd"><span class="prompt">$ </span>get_brain_d4<button>Copy</button></div>
+    <p class="muted">Installs to <code class="inl">~/raise_checkpoints/smolvla_C_ref/checkpoints/006000/pretrained_model/</code> —
+       that folder <i>is</i> the model: <code class="inl">model.safetensors</code> (the 450M-parameter weights) + config + input/output processors.</p>
     <details>
       <summary>No alias / prefer to do it by hand? (same thing, three commands)</summary>
       <div class="cmd"><span class="prompt">$ </span>mkdir -p ~/raise_checkpoints/smolvla_C_ref/checkpoints/006000
@@ -211,6 +240,7 @@
        <code class="inl">action = model(image, instruction, state)</code>. This script grabs the three
        inputs live from the sim, calls the model <b>once</b>, and prints everything:</p>
     <div class="cmd"><span class="prompt">$ </span>vla_one_d4 --spawn      <span class="note"># terminal 3 — one call, fully explained</span><button>Copy</button></div>
+    <p class="muted">= <code class="inl">~/raise_venvs/lerobot/bin/python3 raise_ros2_ws/src/raise2026_labs/day2/day2_02_vla_executor/starter/vla_one_step.py --spawn</code> — open the script, it's a short, fully commented file.</p>
     <pre class="out">INPUT 1 — image  : 224×224 RGB from /wrist_camera/image_raw (what the robot SEES)
 INPUT 2 — words  : "pick the red tomato"  (what we WANT)
 INPUT 3 — state  : 7 floats from /joint_states (where it IS)
@@ -234,6 +264,7 @@ OUTPUT  — action : 7 floats = 6 joint targets + gripper (what to DO next)   [4
   <div class="step hero">
     <span class="num">4</span><h3>The payoff: the full loop &mdash; see &rarr; ask the model &rarr; act, at 10&nbsp;Hz</h3>
     <div class="cmd"><span class="prompt">$ </span>vla_d4 --task C --spawn --instruction "pick the red tomato"<button>Copy</button></div>
+    <p class="muted">= <code class="inl">~/raise_venvs/lerobot/bin/python3 .../day2_02_vla_executor/starter/vla_executor.py --task C --spawn ...</code>, loading the model from <code class="inl">~/raise_checkpoints/smolvla_C_ref/checkpoints/006000/pretrained_model/</code>.</p>
     <div class="see"><b>What happens:</b> <code class="inl">--spawn</code> places a red + green tomato at the trained grasp points,
       then SmolVLA sees the wrist camera, reads your instruction, and drives the arm to pick the <b>red</b> one &mdash; ~10&nbsp;ms per decision.
       The first run loads the model (~20&nbsp;s) before the arm moves.</div>
