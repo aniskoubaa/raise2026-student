@@ -41,6 +41,8 @@ from pathlib import Path
 
 import numpy as np
 import rclpy
+from rclpy.duration import Duration as RclpyDuration
+from rclpy.parameter import Parameter as RclpyParameter
 from rclpy.node import Node
 from sensor_msgs.msg import Image, JointState
 from std_msgs.msg import Float64, String
@@ -72,6 +74,7 @@ from sim_poses import POSE_HOME, GRASP_LEFT, GRASP_RIGHT, above as _above, check
 class Demonstrator(Node):
     def __init__(self, world: str, gripper_link: str):
         super().__init__('auto_demonstrator')
+        self.set_parameters([RclpyParameter('use_sim_time', RclpyParameter.Type.BOOL, True)])
         self.world = world
         self.gripper_link = gripper_link
 
@@ -109,8 +112,12 @@ class Demonstrator(Node):
 
     # ── helpers ──────────────────────────────────────────────────────────────
     def spin(self, secs: float):
-        end = time.time() + secs
-        while rclpy.ok() and time.time() < end:
+        # SIM-time wait (/clock): with the Gazebo GUI open the sim may run
+        # below 100% real-time; wall-clock pacing would then record frames
+        # too fast relative to the physics (10 Hz wall != 10 Hz sim).
+        start = self.get_clock().now()
+        dur = RclpyDuration(seconds=secs)
+        while rclpy.ok() and (self.get_clock().now() - start) < dur:
             rclpy.spin_once(self, timeout_sec=0.02)
 
     def tool_point(self, grasp_offset: float = 0.13):

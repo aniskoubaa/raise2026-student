@@ -30,6 +30,8 @@ from pathlib import Path
 
 import numpy as np
 import rclpy
+from rclpy.duration import Duration as RclpyDuration
+from rclpy.parameter import Parameter as RclpyParameter
 from rclpy.node import Node
 from sensor_msgs.msg import Image, JointState
 from std_msgs.msg import Float64, String
@@ -61,6 +63,7 @@ class EvalIO(Node):
 
     def __init__(self, world: str, gripper_link: str):
         super().__init__('vla_evaluator')
+        self.set_parameters([RclpyParameter('use_sim_time', RclpyParameter.Type.BOOL, True)])
         self.world = world
         self.gripper_link = gripper_link
         all_joints = STATE_JOINTS + list(GRIPPER_MIMIC_SIGNS)
@@ -83,8 +86,14 @@ class EvalIO(Node):
         self.measured = dict(zip(msg.name, msg.position))
 
     def spin(self, secs):
-        end = time.time() + secs
-        while rclpy.ok() and time.time() < end:
+        """Wait `secs` of SIM time (/clock) — correct at any real-time factor.
+
+        With the Gazebo GUI open the sim can run below 100% real-time; a
+        wall-clock loop then drives the robot too fast relative to physics
+        (found live: GUI runs failed while headless runs passed)."""
+        start = self.get_clock().now()
+        dur = RclpyDuration(seconds=secs)
+        while rclpy.ok() and (self.get_clock().now() - start) < dur:
             rclpy.spin_once(self, timeout_sec=0.02)
 
     def state_vec(self):

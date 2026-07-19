@@ -49,7 +49,9 @@ from pathlib import Path
 
 import numpy as np
 import rclpy
+from rclpy.duration import Duration as RclpyDuration
 from rclpy.node import Node
+from rclpy.parameter import Parameter as RclpyParameter
 from sensor_msgs.msg import Image, JointState
 from std_msgs.msg import Float64, String
 from geometry_msgs.msg import Twist
@@ -108,6 +110,8 @@ class ArmIO(Node):
 
     def __init__(self, enable_base: bool, world: str, gripper_link: str):
         super().__init__('vla_executor')
+        # follow the simulator's clock (see spin() for why)
+        self.set_parameters([RclpyParameter('use_sim_time', RclpyParameter.Type.BOOL, True)])
         self.world = world
         self.gripper_link = gripper_link
         self.latest_img = None
@@ -135,8 +139,17 @@ class ArmIO(Node):
         self.latest_state = dict(zip(msg.name, msg.position))
 
     def spin(self, secs: float):
-        end = time.time() + secs
-        while rclpy.ok() and time.time() < end:
+        """Wait `secs` of SIM time while processing callbacks.
+
+        Sim time (the /clock topic), NOT wall time: with the Gazebo GUI open
+        the sim can run at e.g. 75% real-time, and a wall-clock 10 Hz loop
+        then commands the robot 33% too fast relative to the physics — enough
+        to push the policy off its training distribution (found live: picks
+        that succeed headless time out with the GUI running). Pacing by sim
+        time makes the executor correct at ANY real-time factor."""
+        start = self.get_clock().now()
+        dur = RclpyDuration(seconds=secs)
+        while rclpy.ok() and (self.get_clock().now() - start) < dur:
             rclpy.spin_once(self, timeout_sec=0.02)
 
     def state_vec(self):
